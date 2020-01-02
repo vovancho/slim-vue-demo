@@ -1,0 +1,80 @@
+version: '3'
+services:
+
+  api-nginx:
+    build:
+      context: ./api/docker
+      dockerfile: nginx.docker
+    volumes:
+    - ./api:/var/www/api
+    ports:
+    - "8081:80"
+    depends_on:
+    - api-php-fpm
+
+  api-php-cli:
+    build:
+      context: ./api/docker
+      dockerfile: php-cli.docker
+    volumes:
+    - ./api:/var/www/api
+    - composer:/root/.composer/cache
+    working_dir: /var/www/api
+    tty: true
+
+  api-php-fpm:
+    build:
+      context: ./api/docker
+      dockerfile: php-fpm.docker
+    volumes:
+    - ./api:/var/www/api
+    working_dir: /var/www/api
+
+  project-db:
+    image: postgres:11.2-alpine
+    volumes:
+    - manager-postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: api
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: api
+    ports:
+    - "54321:5432"
+
+#  frontend-node:
+#    image: node:12.7-alpine
+#    volumes:
+#    - ./frontend:/var/www/frontend
+#    working_dir: /var/www/frontend
+
+  frontend-node:
+    build:
+      context: ./frontend/docker/node
+      args:
+      - YOUR_APP_WEB_HTTP_PORT=8080
+    ports:
+    - "8080:8080"
+    - "8000:8000"  # only needed if using vue-cli UI
+    volumes:
+    - ./frontend:/var/www/frontend
+    tty: true
+    environment:
+    # https://cli.vuejs.org/guide/mode-and-env.html#modes
+    # development is used by vue-cli-service serve
+    - NODE_ENV=development
+    # one way for hot reloading ... see above for details
+    - CHOKIDAR_USEPOLLING=true
+    - CHOKIDAR_INTERVAL=100
+    - YOUR_APP_WEB_HTTP_PORT=8080
+
+
+  mailer:
+    image: mailhog/mailhog
+    restart: unless-stopped
+    ports:
+    - "1025:1025"
+    - "8082:8025"
+
+volumes:
+  composer:
+  manager-postgres:
