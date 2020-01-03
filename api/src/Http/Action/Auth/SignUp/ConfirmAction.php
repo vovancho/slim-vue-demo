@@ -34,7 +34,7 @@ class ConfirmAction implements RequestHandlerInterface
 
         $this->handler->handle($command);
 
-        return JsonResponse::create([]);
+        return new JsonResponse([]);
     }
 
     private function deserialize(ServerRequestInterface $request): Command

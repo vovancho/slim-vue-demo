@@ -39,6 +39,6 @@ class UserRepository implements UserRepositoryInterface
             }
             return new UserEntity($user->getId()->getId());
         }
-        return  null;
+        return null;
     }
 }

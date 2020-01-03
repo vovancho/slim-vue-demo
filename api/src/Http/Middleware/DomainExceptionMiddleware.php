@@ -19,7 +19,7 @@ class DomainExceptionMiddleware implements MiddlewareInterface
         try {
             return $handler->handle($request);
         } catch (\DomainException $e) {
-            return JsonResponse::create([
+            return new JsonResponse([
                 'error' => $e->getMessage(),
             ], StatusCodeInterface::STATUS_BAD_REQUEST);
         }

@@ -11,15 +11,20 @@ namespace Api\Http;
 
 
 use Fig\Http\Message\StatusCodeInterface;
-use Psr\Http\Message\ResponseInterface;
-use Slim\Psr7\Factory\ResponseFactory;
+use Slim\Psr7\Headers;
+use Slim\Psr7\Interfaces\HeadersInterface;
+use Slim\Psr7\Response;
 
-class JsonResponse
+class JsonResponse extends Response
 {
-    public static function create($data, $status = StatusCodeInterface::STATUS_OK): ResponseInterface
+    public function __construct($data, int $status = StatusCodeInterface::STATUS_OK, ?HeadersInterface $headers = null)
     {
-        $response = (new ResponseFactory())->createResponse($status);
-        $response->getBody()->write(json_encode($data));
-        return $response->withHeader('Content-Type', 'application/json');
+        $headers = $headers ? $headers : new Headers();
+        $headers->addHeader('Content-Type', 'application/json');
+
+        parent::__construct($status, $headers, null);
+
+        $this->getBody()->write(json_encode($data));
+        $this->getBody()->rewind();
     }
 }

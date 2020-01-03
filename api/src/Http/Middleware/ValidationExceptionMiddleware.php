@@ -20,7 +20,7 @@ class ValidationExceptionMiddleware implements MiddlewareInterface
         try {
             return $handler->handle($request);
         } catch (ValidationException $e) {
-            return JsonResponse::create([
+            return new JsonResponse([
                 'errors' => $e->getErrors()->toArray(),
             ], StatusCodeInterface::STATUS_BAD_REQUEST);
         }

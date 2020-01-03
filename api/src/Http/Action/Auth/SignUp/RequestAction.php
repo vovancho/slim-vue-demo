@@ -34,7 +34,7 @@ class RequestAction implements RequestHandlerInterface
 
         $this->handler->handle($command);
 
-        return JsonResponse::create([
+        return new JsonResponse([
             'email' => $command->email,
         ], 201);
     }

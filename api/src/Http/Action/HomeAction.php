@@ -10,11 +10,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ServerRequestInterface as ServerRequest;
 
 
-class HomeAction  implements RequestHandlerInterface
+class HomeAction implements RequestHandlerInterface
 {
     public function handle(ServerRequest $request): ResponseInterface
     {
-        return JsonResponse::create([
+        return new JsonResponse([
             'name' => 'App API',
             'version' => '1.0',
         ]);
