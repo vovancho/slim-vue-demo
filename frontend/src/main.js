@@ -4,8 +4,8 @@ import router from "./router";
 import store from "./store";
 import vuetify from "./plugins/vuetify";
 import axios from "axios";
-import "./vee-validate";
 import VueTheMask from 'vue-the-mask';
+import "./vee-validate/index";
 
 Vue.config.productionTip = false;
 

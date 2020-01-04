@@ -35,7 +35,7 @@ class ConfirmTest extends TestCase
         $token = new ConfirmToken('token', $now->modify('+1 day'));
         $user = $this->signUp($now, $token);
 
-        $this->expectExceptionMessage('Confirm token is invalid.');
+        $this->expectExceptionMessage('Неверный код подтверждения.');
         $user->confirmSignup('invalid', $now);
     }
 
@@ -45,7 +45,7 @@ class ConfirmTest extends TestCase
         $token = new ConfirmToken('token', $now);
         $user = $this->signUp($now, $token);
 
-        $this->expectExceptionMessage('Confirm token is expired.');
+        $this->expectExceptionMessage('Код подтверждения истек.');
         $user->confirmSignup($token->getToken(), $now->modify('+1 day'));
     }
 

@@ -6,7 +6,12 @@
 
     <v-content>
       <v-container class="fill-height" fluid>
-        <v-card class="mx-auto mt-5" max-width="344" outlined :loading="loading">
+        <v-card
+          class="mx-auto mt-5"
+          max-width="344"
+          outlined
+          :loading="loading"
+        >
           <v-card-text> Name: {{ name }}, Version: {{ version }}</v-card-text>
         </v-card>
       </v-container>
@@ -19,23 +24,22 @@
 </template>
 
 <script>
-  import axios from "axios";
+import axios from "axios";
 
-  export default {
-    data() {
-      return {
-        name: null,
-        version: null,
-        loading: true
-      }
-    },
-    mounted() {
-      axios.get('/').then(response => {
-
-        this.name = response.data.name;
-        this.version = response.data.version;
-        this.loading = false;
-      });
-    },
-  };
+export default {
+  data() {
+    return {
+      name: null,
+      version: null,
+      loading: true
+    };
+  },
+  mounted() {
+    axios.get("/").then(response => {
+      this.name = response.data.name;
+      this.version = response.data.version;
+      this.loading = false;
+    });
+  }
+};
 </script>

@@ -12,6 +12,7 @@ return function (App $app) {
     $app->addBodyParsingMiddleware();
     $app->add(Middleware\DomainExceptionMiddleware::class);
     $app->add(Middleware\ValidationExceptionMiddleware::class);
+    $app->add(Middleware\TranslateOAuthExceptionMiddleware::class);
 
     $auth = $container->get(ResourceServerMiddleware::class);
 

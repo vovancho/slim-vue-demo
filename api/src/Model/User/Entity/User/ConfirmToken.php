@@ -31,10 +31,10 @@ class ConfirmToken
     public function validate(string $token, \DateTimeImmutable $date): void
     {
         if (!$this->isEqualTo($token)) {
-            throw new \DomainException('Confirm token is invalid.');
+            throw new \DomainException('Неверный код подтверждения.');
         }
         if ($this->isExpiredTo($date)) {
-            throw new \DomainException('Confirm token is expired.');
+            throw new \DomainException('Код подтверждения истек.');
         }
     }
 

@@ -90,7 +90,7 @@ class ConfirmTest extends WebTestCase
         $data = json_decode($content, true);
 
         self::assertEquals([
-            'error' => 'Confirm token is invalid.',
+            'error' => 'Неверный код подтверждения.',
         ], $data);
     }
 
@@ -107,7 +107,7 @@ class ConfirmTest extends WebTestCase
         $data = json_decode($content, true);
 
         self::assertEquals([
-            'error' => 'Confirm token is expired.',
+            'error' => 'Код подтверждения истек.',
         ], $data);
     }
 }

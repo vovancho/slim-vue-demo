@@ -7,21 +7,58 @@
             <v-card class="elevation-6" :disabled="loading">
               <v-toolbar color="primary" dark flat>
                 <v-toolbar-title>Авторизация</v-toolbar-title>
-                <v-spacer/>
+                <v-spacer />
                 <v-icon>mdi-login</v-icon>
               </v-toolbar>
               <v-card-text>
-                <v-alert :value="!!error" icon="mdi-alert-circle" prominent dense transition="scroll-x-reverse-transition" border="left" type="error">{{ error }}</v-alert>
+                <v-alert
+                  :value="!!error"
+                  icon="mdi-alert-circle"
+                  prominent
+                  dense
+                  transition="scroll-x-reverse-transition"
+                  border="left"
+                  type="error"
+                  >{{ error }}
+                </v-alert>
 
                 <v-form>
-                  <ValidationProvider name="E-Mail" rules="required|email" v-slot="{ errors, valid }">
-                    <v-text-field v-model="form.email" label="E-Mail" name="login" prepend-icon="mdi-account" type="text" :error-messages="errors" required :success="valid"/>
-                  </ValidationProvider>
+                  <ValidationObserver ref="login">
+                    <ValidationProvider
+                      :name="form.email.label"
+                      :rules="form.email.rules"
+                      v-slot="{ errors, valid }"
+                    >
+                      <v-text-field
+                        v-model="form.email.value"
+                        :label="form.email.label"
+                        name="login"
+                        prepend-icon="mdi-account"
+                        type="text"
+                        :error-messages="errors"
+                        required
+                        :success="valid"
+                      />
+                    </ValidationProvider>
 
-                  <ValidationProvider name="Пароль" rules="required|min:6" v-slot="{ errors, valid }">
-                    <v-text-field v-model="form.password" id="password" label="Пароль" name="password" prepend-icon="mdi-lock" type="password" :error-messages="errors" required
-                                  :success="valid"/>
-                  </ValidationProvider>
+                    <ValidationProvider
+                      :name="form.password.label"
+                      :rules="form.password.rules"
+                      v-slot="{ errors, valid }"
+                    >
+                      <v-text-field
+                        v-model="form.password.value"
+                        id="password"
+                        :label="form.password.label"
+                        name="password"
+                        prepend-icon="mdi-lock"
+                        type="password"
+                        :error-messages="errors"
+                        required
+                        :success="valid"
+                      />
+                    </ValidationProvider>
+                  </ValidationObserver>
                 </v-form>
               </v-card-text>
               <v-card-actions>
@@ -29,8 +66,14 @@
                   <v-icon>mdi-arrow-left</v-icon>
                   Регистрация
                 </v-btn>
-                <v-spacer/>
-                <v-btn @click="login" color="primary" large :loading="loading">Войти</v-btn>
+                <v-spacer />
+                <v-btn
+                  @click="loginForm"
+                  color="primary"
+                  large
+                  :loading="loading"
+                  >Войти
+                </v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -41,46 +84,59 @@
 </template>
 
 <script>
-  import {ValidationProvider} from "vee-validate";
+import form from "../mixins/form";
+import { mapActions } from "vuex";
 
-  export default {
-    components: {
-      ValidationProvider
-    },
-    data() {
-      return {
-        form: {
-          email: this.$store.state.currentEmail,
-          password: null,
+export default {
+  mixins: [form],
+  data() {
+    return {
+      form: {
+        email: {
+          label: "E-Mail",
+          value: this.$store.state.currentEmail,
+          rules: { required: true, email: true },
+          error: null
         },
-        error: null,
-        loading: false,
-      }
-    },
-    methods: {
-      registerView() {
-        this.$router.push({name: 'signup'});
+        password: {
+          label: "Пароль",
+          value: "",
+          rules: { required: true, min: 6 },
+          error: null
+        }
       },
-      login() {
-        this.error = null;
-        this.loading = true;
-        this.$store.dispatch('login', {
-          username: this.form.email,
-          password: this.form.password,
-        })
-          .then(() => {
-            this.loading = false;
-            this.$router.push({name: 'home'});
-          })
-          .catch(error => {
-            if (error.response) {
-              this.error = error.response.data.error;
-            } else {
-              console.log(error.message);
-            }
-            this.loading = false;
-          });
+      error: null,
+      loading: false
+    };
+  },
+  methods: {
+    ...mapActions(["login"]),
+    registerView() {
+      this.$router.push({ name: "signup" });
+    },
+    async loginForm() {
+      this.error = null;
+
+      const valid = await this.$refs.login.validate();
+
+      if (valid) {
+        try {
+          this.loading = true;
+          let preparedForm = this.prepareForm(this.form);
+
+          await this.login(preparedForm);
+          this.loading = false;
+          await this.$router.push({ name: "home" });
+        } catch (error) {
+          if (error.response) {
+            this.error = error.response.data.error;
+          } else {
+            console.log(error.message);
+          }
+          this.loading = false;
+        }
       }
     }
-  };
+  }
+};
 </script>

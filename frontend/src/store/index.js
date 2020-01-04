@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import axios from 'axios';
+import axios from "axios";
 
 Vue.use(Vuex);
 
@@ -21,63 +21,62 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    login(context, data) {
-      return new Promise((resolve, reject) => {
-        context.commit("logout");
-        axios.post("/oauth/auth", {
+    async login({ commit }, data) {
+      commit("logout");
+      try {
+        let response = await axios.post("/oauth/auth", {
           grant_type: "password",
-          username: data.username,
+          username: data.email,
           password: data.password,
           client_id: "app",
           client_secret: "",
-          access_type: "offline",
-        })
-          .then(response => {
-            const user = response.data;
-            localStorage.setItem("user", JSON.stringify(user));
-            axios.defaults.headers.common["Authorization"] = "Bearer " + user.access_token;
-            context.commit("login", user);
-            resolve(user)
-          })
-          .catch(error => {
-            context.commit("logout");
-            localStorage.removeItem("user");
-            reject(error)
-          })
-      })
-    },
-    logout(context) {
-      return new Promise((resolve) => {
-        context.commit("logout");
+          access_type: "offline"
+        });
+
+        const user = response.data;
+        localStorage.setItem("user", JSON.stringify(user));
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + user.access_token;
+        commit("login", user);
+
+        return user;
+      } catch (error) {
+        commit("logout");
         localStorage.removeItem("user");
-        delete axios.defaults.headers.common["Authorization"];
-        resolve()
-      });
+
+        throw error;
+      }
     },
-    refresh(context) {
-      return new Promise((resolve, reject) => {
-        if (context.state.user) {
-          delete axios.defaults.headers.common["Authorization"];
-          return axios.post("/oauth/auth", {
+    logout({ commit }) {
+      commit("logout");
+      localStorage.removeItem("user");
+      delete axios.defaults.headers.common["Authorization"];
+    },
+    async refresh({ state, commit, dispatch }) {
+      if (state.user) {
+        delete axios.defaults.headers.common["Authorization"];
+
+        try {
+          let response = await axios.post("/oauth/auth", {
             grant_type: "refresh_token",
-            refresh_token: context.state.user.refresh_token,
+            refresh_token: state.user.refresh_token,
             client_id: "app",
-            client_secret: "",
-          })
-            .then(response => {
-              const user = response.data;
-              localStorage.setItem("user", JSON.stringify(user));
-              axios.defaults.headers.common["Authorization"] = "Bearer " + user.access_token;
-              context.commit("login", user);
-              resolve(response)
-            })
-            .catch(error => {
-              context.dispatch("logout");
-              reject(error)
-            })
+            client_secret: ""
+          });
+
+          const user = response.data;
+          localStorage.setItem("user", JSON.stringify(user));
+          axios.defaults.headers.common["Authorization"] =
+            "Bearer " + user.access_token;
+          commit("login", user);
+
+          return response;
+        } catch (error) {
+          dispatch("logout");
+
+          throw error;
         }
-        resolve()
-      });
+      }
     }
   },
   modules: {}
