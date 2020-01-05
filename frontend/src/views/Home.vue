@@ -1,7 +1,12 @@
 <template>
   <v-app>
     <v-app-bar app color="indigo" dark hide-on-scroll>
-      <v-toolbar-title>Application</v-toolbar-title>
+      <v-toolbar-title>Demo API Task Handler Application</v-toolbar-title>
+      <v-spacer />
+      <v-toolbar-items>
+        <div class="headline d-flex align-center px-4">{{ userEmail }}</div>
+        <v-btn text @click="logoutClicked">Выйти</v-btn>
+      </v-toolbar-items>
     </v-app-bar>
 
     <v-content>
@@ -25,6 +30,7 @@
 
 <script>
 import axios from "axios";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   data() {
@@ -34,12 +40,29 @@ export default {
       loading: true
     };
   },
-  mounted() {
-    axios.get("/").then(response => {
-      this.name = response.data.name;
-      this.version = response.data.version;
-      this.loading = false;
-    });
+  computed: {
+    ...mapGetters(["isLogged", "userEmail"])
+  },
+  methods: {
+    ...mapActions(["logout"]),
+    async logoutClicked() {
+      await this.logout();
+      await this.$router.push({ name: "login" });
+    }
+  },
+  async mounted() {
+    if (this.$store.state.user) {
+      await axios.get("/").then(response => {
+        this.name = response.data.name;
+        this.version = response.data.version;
+        this.loading = false;
+      });
+    }
+  },
+  created() {
+    if (!this.isLogged) {
+      this.$router.push({ name: "login" });
+    }
   }
 };
 </script>

@@ -11,8 +11,9 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Dotenv\Dotenv;
 use DI\ContainerBuilder;
 
-chdir(dirname(__DIR__));
-require 'vendor/autoload.php';
+define('APP_PATH', dirname(__DIR__) . DIRECTORY_SEPARATOR);
+
+require APP_PATH . 'vendor/autoload.php';
 
 if (file_exists('.env')) {
     (new Dotenv(true))->load('.env');
@@ -26,7 +27,7 @@ if (false) { // Should be set to true in production
 }
 
 // Set up settings
-$containerConfig = require 'app/container.php';
+$containerConfig = require APP_PATH . 'app/container.php';
 $containerConfig($containerBuilder);
 
 // Build PHP-DI Container instance

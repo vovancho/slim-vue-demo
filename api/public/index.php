@@ -1,74 +1,62 @@
 <?php
 declare(strict_types=1);
 
-use Api\Application\Handlers\HttpErrorHandler;
-use Api\Application\Handlers\ShutdownHandler;
-use Api\Application\ResponseEmitter\ResponseEmitter;
+use Api\Infrastructure\Framework\ResponseEmitter;
 use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
 use Symfony\Component\Dotenv\Dotenv;
 
-require __DIR__ . '/../vendor/autoload.php';
+define('APP_PATH', realpath('..') . DIRECTORY_SEPARATOR);
 
-if (file_exists(__DIR__ . '/../.env')) {
-    (new Dotenv(true))->load(__DIR__ . '/../.env');
+require APP_PATH . 'vendor/autoload.php';
+
+if (file_exists(APP_PATH . '.env')) {
+    (new Dotenv(true))->load(APP_PATH . '.env');
 }
 
+(function () {
 // Instantiate PHP-DI ContainerBuilder
-$containerBuilder = new ContainerBuilder();
+    $containerBuilder = new ContainerBuilder();
 
-if (false) { // Should be set to true in production
-    $containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
-}
+    if (false) { // Should be set to true in production
+        $containerBuilder->enableCompilation(APP_PATH . 'var/cache');
+    }
 
 // Set up settings
-$containerConfig = require __DIR__ . '/../app/container.php';
-$containerConfig($containerBuilder);
+    $containerConfig = require APP_PATH . 'app/container.php';
+    $containerConfig($containerBuilder);
 
 // Build PHP-DI Container instance
-$container = $containerBuilder->build();
+    $container = $containerBuilder->build();
 
 // Instantiate the app
-AppFactory::setContainer($container);
-$app = AppFactory::create();
-
-$callableResolver = $app->getCallableResolver();
+    AppFactory::setContainer($container);
+    $app = AppFactory::create();
 
 // Register middleware
-$middleware = require __DIR__ . '/../app/middleware.php';
-$middleware($app);
+    $middleware = require APP_PATH . 'app/middleware.php';
+    $middleware($app);
 
 // Register routes
-$routes = require __DIR__ . '/../app/routes.php';
-$routes($app);
+    $routes = require APP_PATH . 'app/routes.php';
+    $routes($app);
 
-/** @var bool $displayErrorDetails */
-$displayErrorDetails = $container->get('settings')['displayErrorDetails'];
+    /** @var bool $displayErrorDetails */
+    $displayErrorDetails = $container->get('settings')['displayErrorDetails'];
 
 // Create Request object from globals
-$serverRequestCreator = ServerRequestCreatorFactory::create();
-$request = $serverRequestCreator->createServerRequestFromGlobals();
-
-// Create Error Handler
-$responseFactory = $app->getResponseFactory();
-$errorHandler = new HttpErrorHandler($callableResolver, $responseFactory);
-
-// Create Shutdown Handler
-//$shutdownHandler = new ShutdownHandler($request, $errorHandler, $displayErrorDetails);
-//register_shutdown_function($shutdownHandler);
+    $serverRequestCreator = ServerRequestCreatorFactory::create();
+    $request = $serverRequestCreator->createServerRequestFromGlobals();
 
 // Add Routing Middleware
-$app->addRoutingMiddleware();
-
+    $app->addRoutingMiddleware();
 
 // Add Error Middleware
-$errorMiddleware = $app->addErrorMiddleware($displayErrorDetails, true, true);
-$errorMiddleware->setDefaultErrorHandler($errorHandler);
-
-//$app->run();
+    $app->addErrorMiddleware($displayErrorDetails, true, true);
 
 // Run App & Emit Response
-$response = $app->handle($request);
-$responseEmitter = new ResponseEmitter();
-$responseEmitter->emit($response);
+    $response = $app->handle($request);
+    $responseEmitter = new ResponseEmitter();
+    $responseEmitter->emit($response);
+})();

@@ -2,15 +2,12 @@
 
 declare(strict_types=1);
 
-use Api\Model\User\Service\PasswordHasher;
-use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Server;
 use Api\Infrastructure\Model\OAuth as Infrastructure;
 use Psr\Container\ContainerInterface;
 
 return [
-    Server\AuthorizationServer::class => function (ContainerInterface $container)
-    {
+    Server\AuthorizationServer::class => function (ContainerInterface $container) {
         $config = $container->get('config')['oauth'];
 
         $clientRepository = $container->get(Server\Repositories\ClientRepositoryInterface::class);
@@ -55,50 +52,28 @@ return [
             new Server\CryptKey($config['public_key_path'], null, false)
         );
     },
-    Api\Infrastructure\Framework\Middleware\ResourceServerMiddleware::class => function (ContainerInterface $container) {
-        return new Api\Infrastructure\Framework\Middleware\ResourceServerMiddleware(
-            $container->get(Server\ResourceServer::class)
-        );
-    },
     Server\Repositories\ClientRepositoryInterface::class => function (ContainerInterface $container) {
         $config = $container->get('config')['oauth'];
         return new Infrastructure\Entity\ClientRepository($config['clients']);
     },
-    Server\Repositories\ScopeRepositoryInterface::class => function () {
-        return new Infrastructure\Entity\ScopeRepository();
-    },
-    Server\Repositories\AuthCodeRepositoryInterface::class => function (ContainerInterface $container) {
-        return new Infrastructure\Entity\AuthCodeRepository(
-            $container->get(EntityManagerInterface::class)
-        );
-    },
-    Server\Repositories\AccessTokenRepositoryInterface::class => function (ContainerInterface $container) {
-        return new Infrastructure\Entity\AccessTokenRepository(
-            $container->get(EntityManagerInterface::class)
-        );
-    },
-    Server\Repositories\RefreshTokenRepositoryInterface::class => function (ContainerInterface $container) {
-        return new Infrastructure\Entity\RefreshTokenRepository(
-            $container->get(EntityManagerInterface::class)
-        );
-    },
-    Server\Repositories\UserRepositoryInterface::class => function (ContainerInterface $container) {
-        return new Infrastructure\Entity\UserRepository(
-            $container->get(EntityManagerInterface::class),
-            $container->get(PasswordHasher::class)
-        );
-    },
+    Api\Infrastructure\Framework\Middleware\ResourceServerMiddleware::class => \DI\autowire(Api\Infrastructure\Framework\Middleware\ResourceServerMiddleware::class),
+    Server\Repositories\ScopeRepositoryInterface::class => \DI\autowire(Infrastructure\Entity\ScopeRepository::class),
+    Server\Repositories\AuthCodeRepositoryInterface::class => \DI\autowire(Infrastructure\Entity\AuthCodeRepository::class),
+    Server\Repositories\AccessTokenRepositoryInterface::class => \DI\autowire(Infrastructure\Entity\AccessTokenRepository::class),
+    Server\Repositories\RefreshTokenRepositoryInterface::class => \DI\autowire(Infrastructure\Entity\RefreshTokenRepository::class),
+    Server\Repositories\UserRepositoryInterface::class => \DI\autowire(Infrastructure\Entity\UserRepository::class),
+    Api\Model\OAuth\Entity\AccessTokenEntity::class => \DI\create(Api\Model\OAuth\Entity\AccessTokenEntity::class)->property('repo', \DI\get(Api\Model\User\Entity\User\UserRepository::class)),
 
     'config' => [
         'oauth' => [
-            'public_key_path' => dirname(__DIR__, 2) . '/' . getenv('API_OAUTH_PUBLIC_KEY_PATH'),
-            'private_key_path' => dirname(__DIR__, 2) . '/' . getenv('API_OAUTH_PRIVATE_KEY_PATH'),
+            'public_key_path' => APP_PATH . getenv('API_OAUTH_PUBLIC_KEY_PATH'),
+            'private_key_path' => APP_PATH . getenv('API_OAUTH_PRIVATE_KEY_PATH'),
             'encryption_key' => getenv('API_OAUTH_ENCRYPTION_KEY'),
             'clients' => [
                 'app' => [
-                    'secret'          => null,
-                    'name'            => 'App',
-                    'redirect_uri'    => null,
+                    'secret' => null,
+                    'name' => 'App',
+                    'redirect_uri' => null,
                     'is_confidential' => false,
                 ],
             ],

@@ -24,7 +24,7 @@ class JsonResponse extends Response
 
         parent::__construct($status, $headers, null);
 
-        $this->getBody()->write(json_encode($data));
+        $this->getBody()->write(json_encode($data, JSON_PRETTY_PRINT + JSON_UNESCAPED_UNICODE));
         $this->getBody()->rewind();
     }
 }

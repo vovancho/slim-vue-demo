@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Api\Application\ResponseEmitter;
+namespace Api\Infrastructure\Framework;
 
 use Psr\Http\Message\ResponseInterface;
 use Slim\ResponseEmitter as SlimResponseEmitter;

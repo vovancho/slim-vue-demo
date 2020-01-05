@@ -6,59 +6,23 @@ use Api\Infrastructure;
 use Api\Infrastructure\Model\User as UserInfrastructure;
 use Api\Model\User as UserModel;
 use Api\ReadModel;
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 
 return [
-    Api\Model\Flusher::class => function (ContainerInterface $container) {
-        return new Api\Infrastructure\Model\Service\DoctrineFlusher(
-            $container->get(EntityManagerInterface::class),
-            $container->get(Api\Model\EventDispatcher::class)
-        );
-    },
-
-    UserModel\Service\PasswordHasher::class => function () {
-        return new UserInfrastructure\Service\BCryptPasswordHasher();
-    },
-
-    UserModel\Entity\User\UserRepository::class => function (ContainerInterface $container) {
-        return new UserInfrastructure\Entity\DoctrineUserRepository(
-            $container->get(EntityManagerInterface::class)
-        );
-    },
-
     UserModel\Service\ConfirmTokenizer::class => function (ContainerInterface $container) {
         $interval = $container->get('config')['auth']['signup_confirm_interval'];
         return new UserInfrastructure\Service\RandConfirmTokenizer(new \DateInterval($interval));
     },
 
-    UserModel\Entity\User\UserRepository::class => function (ContainerInterface $container) {
-        return new UserInfrastructure\Entity\DoctrineUserRepository(
-            $container->get(\Doctrine\ORM\EntityManagerInterface::class)
-        );
-    },
+    Api\Model\Flusher::class => \DI\autowire(Api\Infrastructure\Model\Service\DoctrineFlusher::class),
+    UserModel\Service\PasswordHasher::class => \DI\autowire(UserInfrastructure\Service\BCryptPasswordHasher::class),
 
-    UserModel\UseCase\SignUp\Request\Handler::class => function (ContainerInterface $container) {
-        return new UserModel\UseCase\SignUp\Request\Handler(
-            $container->get(UserModel\Entity\User\UserRepository::class),
-            $container->get(UserModel\Service\PasswordHasher::class),
-            $container->get(UserModel\Service\ConfirmTokenizer::class),
-            $container->get(Api\Model\Flusher::class)
-        );
-    },
+    UserModel\UseCase\SignUp\Request\Handler::class => \DI\autowire(UserModel\UseCase\SignUp\Request\Handler::class),
+    UserModel\UseCase\SignUp\Confirm\Handler::class => \DI\autowire(UserModel\UseCase\SignUp\Confirm\Handler::class),
 
-    UserModel\UseCase\SignUp\Confirm\Handler::class => function (ContainerInterface $container) {
-        return new UserModel\UseCase\SignUp\Confirm\Handler(
-            $container->get(UserModel\Entity\User\UserRepository::class),
-            $container->get(Api\Model\Flusher::class)
-        );
-    },
+    UserModel\Entity\User\UserRepository::class => \DI\autowire(UserInfrastructure\Entity\DoctrineUserRepository::class),
 
-    ReadModel\User\UserReadRepository::class => function (ContainerInterface $container) {
-        return new Infrastructure\ReadModel\User\DoctrineUserReadRepository(
-            $container->get(\Doctrine\ORM\EntityManagerInterface::class)
-        );
-    },
+    ReadModel\User\UserReadRepository::class => \DI\autowire(Infrastructure\ReadModel\User\DoctrineUserReadRepository::class),
 
     'config' => [
         'auth' => [

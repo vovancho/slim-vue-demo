@@ -22,6 +22,10 @@ class DoctrineUserReadRepository implements UserReadRepository
         $this->em = $em;
     }
 
+    /**
+     * @param string $id
+     * @return User|null|object
+     */
     public function find(string $id): ?User
     {
         return $this->repo->find($id);

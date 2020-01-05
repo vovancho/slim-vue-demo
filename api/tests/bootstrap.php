@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 use Symfony\Component\Dotenv\Dotenv;
 
-chdir(dirname(__DIR__));
-require 'vendor/autoload.php';
+define('APP_PATH', dirname(__DIR__) . DIRECTORY_SEPARATOR);
 
-(new Dotenv(true))->load('.env');
+require APP_PATH . 'vendor/autoload.php';
+
+(new Dotenv(true))->load(APP_PATH . '.env');

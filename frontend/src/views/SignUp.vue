@@ -19,8 +19,8 @@
                   transition="scroll-x-reverse-transition"
                   border="left"
                   type="error"
-                  >{{ error }}</v-alert
-                >
+                  >{{ error }}
+                </v-alert>
 
                 <ValidationObserver ref="signup">
                   <ValidationProvider
@@ -94,7 +94,13 @@
                       dense
                       color="primary"
                       :success="valid"
-                    />
+                      ref="token"
+                      class="confirm-input"
+                    >
+                      <template v-slot:append-outer>
+                        <v-btn large text @click="cancelConfirm">Отмена</v-btn>
+                      </template>
+                    </v-text-field>
                   </ValidationProvider>
                 </ValidationObserver>
               </v-card-text>
@@ -110,16 +116,16 @@
                   color="primary"
                   large
                   :loading="loading"
-                  >Зарегистрироваться</v-btn
-                >
+                  >Зарегистрироваться
+                </v-btn>
                 <v-btn
                   v-else
                   @click="confirm"
                   color="primary"
                   large
                   :loading="loading"
-                  >Подтвердить</v-btn
-                >
+                  >Подтвердить
+                </v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -130,8 +136,10 @@
 </template>
 
 <script>
+import Vue from "vue";
 import axios from "axios";
 import form from "../mixins/form";
+import { mapGetters } from "vuex";
 
 export default {
   mixins: [form],
@@ -141,7 +149,7 @@ export default {
         email: {
           label: "E-Mail",
           value: "",
-          rules: { required: true, email: true },
+          rules: { required: true /*, email: true*/ },
           error: null
         },
         password: {
@@ -172,6 +180,9 @@ export default {
       authReadonly: true, // prevent from storing password
       loading: false
     };
+  },
+  computed: {
+    ...mapGetters(["isLogged"])
   },
   methods: {
     loginView() {
@@ -218,8 +229,7 @@ export default {
 
           await axios.post("/auth/signup", preparedForm);
           this.$store.commit("changeCurrentEmail", this.signUpForm.email.value);
-          this.isConfirming = true;
-          this.confirmForm.email.value = this.signUpForm.email.value;
+          this.confirming();
           this.loading = false;
         } catch (error) {
           if (error.response) {
@@ -238,9 +248,33 @@ export default {
         }
       }
     },
+    cancelConfirm() {
+      this.isConfirming = false;
+      this.confirmForm.token.value = "";
+      this.$refs.confirm.reset();
+    },
     removeReadonly() {
       this.authReadonly = false;
+      console.log(this.$router.currentRoute);
+    },
+    confirming() {
+      this.confirmForm.email.value = this.signUpForm.email.value;
+      this.isConfirming = true;
+      Vue.nextTick(() => {
+        this.$refs.token.focus();
+      });
+    }
+  },
+  created() {
+    if (this.isLogged) {
+      this.$router.push({ name: "home" });
     }
   }
 };
 </script>
+
+<style lang="stylus">
+.confirm-input
+  .v-input__append-outer
+    margin 0 !important
+</style>

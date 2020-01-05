@@ -53,8 +53,8 @@ class ConfirmTest extends WebTestCase
 
         self::assertEquals([
             'errors' => [
-                'email' => 'This value is not a valid email address.',
-                'token' => 'This value should not be blank.',
+                'email' => 'Значение адреса электронной почты недопустимо.',
+                'token' => 'Значение не должно быть пустым.',
 
             ],
         ], $data);
@@ -73,7 +73,7 @@ class ConfirmTest extends WebTestCase
         $data = json_decode($content, true);
 
         self::assertEquals([
-            'error' => 'User is not found.',
+            'error' => 'Пользователь не найден.',
         ], $data);
     }
 

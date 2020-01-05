@@ -85,7 +85,7 @@
 
 <script>
 import form from "../mixins/form";
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   mixins: [form],
@@ -108,6 +108,9 @@ export default {
       error: null,
       loading: false
     };
+  },
+  computed: {
+    ...mapGetters(["isLogged"])
   },
   methods: {
     ...mapActions(["login"]),
@@ -136,6 +139,11 @@ export default {
           this.loading = false;
         }
       }
+    }
+  },
+  created() {
+    if (this.isLogged) {
+      this.$router.push({ name: "home" });
     }
   }
 };

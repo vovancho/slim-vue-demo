@@ -99,11 +99,11 @@ class WebTestCase extends TestCase
         $app = AppFactory::create();
 
         // Register middleware
-        $middleware = require 'app/middleware.php';
+        $middleware = require APP_PATH . 'app/middleware.php';
         $middleware($app);
 
         // Register routes
-        $routes = require 'app/routes.php';
+        $routes = require APP_PATH . 'app/routes.php';
         $routes($app);
         return $app;
     }
@@ -114,7 +114,7 @@ class WebTestCase extends TestCase
         $containerBuilder = new ContainerBuilder();
         // Container intentionally not compiled for tests.
         // Set up settings
-        $containerConfig = require 'app/container.php';
+        $containerConfig = require APP_PATH . 'app/container.php';
         $containerConfig($containerBuilder);
 
         // Build PHP-DI Container instance

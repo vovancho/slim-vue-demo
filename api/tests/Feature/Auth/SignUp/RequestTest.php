@@ -55,8 +55,8 @@ class RequestTest extends WebTestCase
 
         self::assertEquals([
             'errors' => [
-                'email' => 'This value is not a valid email address.',
-                'password' => 'This value is too short. It should have 6 characters or more.',
+                'email' => 'Значение адреса электронной почты недопустимо.',
+                'password' => 'Значение слишком короткое. Должно быть равно 6 символам или больше.',
             ],
         ], $data);
     }
@@ -74,7 +74,7 @@ class RequestTest extends WebTestCase
         $data = json_decode($content, true);
 
         self::assertEquals([
-            'error' => 'User with this email already exists.',
+            'error' => 'Пользователь с таким E-mail уже есть.',
         ], $data);
     }
 }

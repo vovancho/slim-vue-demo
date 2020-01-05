@@ -71,7 +71,7 @@ class User implements AggregateRoot
     public function confirmSignup(string $token, \DateTimeImmutable $date): void
     {
         if ($this->isActive()) {
-            throw new \DomainException('User is already active.');
+            throw new \DomainException('Пользователь подтвержден.');
         }
         $this->confirmToken->validate($token, $date);
         $this->status = self::STATUS_ACTIVE;

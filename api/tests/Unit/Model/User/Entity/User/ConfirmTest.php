@@ -56,7 +56,7 @@ class ConfirmTest extends TestCase
         $user = $this->signUp($now, $token);
 
         $user->confirmSignup($token->getToken(), $now);
-        $this->expectExceptionMessage('User is already active.');
+        $this->expectExceptionMessage('Пользователь подтвержден.');
         $user->confirmSignup($token->getToken(), $now);
     }
 

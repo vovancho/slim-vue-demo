@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
+import jwt_decode from "jwt-decode";
 
 Vue.use(Vuex);
 
@@ -8,6 +9,18 @@ export default new Vuex.Store({
   state: {
     currentEmail: null,
     user: JSON.parse(localStorage.getItem("user"))
+  },
+  getters: {
+    isLogged: state => {
+      return !!state.user;
+    },
+    userEmail: state => {
+      if (state.user) {
+        let payload = jwt_decode(state.user.access_token);
+        return payload.email;
+      }
+      return null;
+    }
   },
   mutations: {
     changeCurrentEmail(state, email) {

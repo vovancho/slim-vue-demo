@@ -7,6 +7,7 @@ namespace Api\Infrastructure\Model\User\Entity;
 use Api\Model\EntityNotFoundException;
 use Api\Model\User\Entity\User\Email;
 use Api\Model\User\Entity\User\User;
+use Api\Model\User\Entity\User\UserId;
 use Api\Model\User\Entity\User\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -27,19 +28,28 @@ class DoctrineUserRepository implements UserRepository
     public function hasByEmail(Email $email): bool
     {
         return $this->repo->createQueryBuilder('t')
-            ->select('COUNT(t.id)')
-            ->andWhere('t.email = :email')
-            ->setParameter(':email', $email->getEmail())
-            ->getQuery()->getSingleScalarResult() > 0;
+                ->select('COUNT(t.id)')
+                ->andWhere('t.email = :email')
+                ->setParameter(':email', $email->getEmail())
+                ->getQuery()->getSingleScalarResult() > 0;
     }
 
     public function getByEmail(Email $email): User
     {
         /** @var User $user */
         if (!$user = $this->repo->findOneBy(['email' => $email->getEmail()])) {
-            throw new EntityNotFoundException('User is not found.');
+            throw new EntityNotFoundException('Пользователь не найден.');
         }
         return $user;
+    }
+
+    public function getEmailById(UserId $id): Email
+    {
+        /** @var User $user */
+        if (!$user = $this->repo->findOneBy(['id' => $id->getId()])) {
+            throw new EntityNotFoundException('Пользователь не найден.');
+        }
+        return $user->getEmail();
     }
 
     public function add(User $user): void

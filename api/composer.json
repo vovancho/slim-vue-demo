@@ -16,8 +16,10 @@
         "slim/psr7": "^0.5",
         "slim/slim": "^4.1",
         "swiftmailer/swiftmailer": "^6.2",
+        "symfony/config": "^5.0",
         "symfony/console": "^5.0",
         "symfony/dotenv": "^5.0",
+        "symfony/translation": "^5.0",
         "symfony/validator": "^5.0",
         "zendframework/zend-config-aggregator": "^1.2"
     },

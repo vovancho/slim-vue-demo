@@ -1,9 +1,12 @@
 <?php
 declare(strict_types=1);
 
-use App\Application\Middleware\SessionMiddleware;
+use Api\Http\Middleware;
 use Slim\App;
 
 return function (App $app) {
-//    $app->add(SessionMiddleware::class);
+    $app->addBodyParsingMiddleware();
+    $app->add(Middleware\DomainExceptionMiddleware::class);
+    $app->add(Middleware\ValidationExceptionMiddleware::class);
+    $app->add(Middleware\TranslateOAuthExceptionMiddleware::class);
 };
