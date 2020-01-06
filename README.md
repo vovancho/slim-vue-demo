@@ -1,6 +1,21 @@
 # Приложение Обработчик задач
 Демонстрационное приложение
 
+## Стек
+
+### Api
+
+ - Slim 4
+ - PostgreSQL
+ - RabbitMQ
+
+### Frontend
+
+ - VueJS
+ - Vue CLI 3
+ - Vuetify
+ - Stylus
+
 ## Особенности приложения
 
 

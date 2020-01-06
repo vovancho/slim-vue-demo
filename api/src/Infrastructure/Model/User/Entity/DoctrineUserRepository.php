@@ -52,6 +52,15 @@ class DoctrineUserRepository implements UserRepository
         return $user->getEmail();
     }
 
+    public function get(UserId $id): User
+    {
+        /** @var User $user */
+        if (!$user = $this->repo->find($id->getId())) {
+            throw new EntityNotFoundException('Пользователь не найден.');
+        }
+        return $user;
+    }
+
     public function add(User $user): void
     {
         $this->em->persist($user);

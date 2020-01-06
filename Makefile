@@ -56,13 +56,13 @@ api-ready:
 # 	docker-compose run --rm frontend-node yarn dev
 
 api-test:
-	docker-compose run --rm api-php-cli php bin/phpunit
+	docker-compose run --rm api-php-cli vendor/bin/phpunit
 
 api-test-coverage:
-	docker-compose run --rm api-php-cli php bin/phpunit --coverage-clover var/clover.xml --coverage-html var/coverage
+	docker-compose run --rm api-php-cli vendor/bin/phpunit --coverage-clover var/clover.xml --coverage-html var/coverage
 
 api-test-unit:
-	docker-compose run --rm api-php-cli php bin/phpunit --testsuite=unit
+	docker-compose run --rm api-php-cli vendor/bin/phpunit --testsuite=unit
 
 api-test-unit-coverage:
-	docker-compose run --rm api-php-cli php bin/phpunit --testsuite=unit --coverage-clover var/clover.xml --coverage-html var/coverage
+	docker-compose run --rm api-php-cli vendor/bin/phpunit --testsuite=unit --coverage-clover var/clover.xml --coverage-html var/coverage

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use Api\Infrastructure;
 use Api\Infrastructure\Model\User as UserInfrastructure;
+use Api\Infrastructure\Model\Task as TaskInfrastructure;
 use Api\Model\User as UserModel;
+use Api\Model\Task as TaskModel;
 use Api\ReadModel;
 use Psr\Container\ContainerInterface;
 
@@ -21,6 +23,7 @@ return [
     UserModel\UseCase\SignUp\Confirm\Handler::class => \DI\autowire(UserModel\UseCase\SignUp\Confirm\Handler::class),
 
     UserModel\Entity\User\UserRepository::class => \DI\autowire(UserInfrastructure\Entity\DoctrineUserRepository::class),
+    TaskModel\Entity\Task\TaskRepository::class => \DI\autowire(TaskInfrastructure\Entity\DoctrineTaskRepository::class),
 
     ReadModel\User\UserReadRepository::class => \DI\autowire(Infrastructure\ReadModel\User\DoctrineUserReadRepository::class),
 

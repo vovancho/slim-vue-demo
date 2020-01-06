@@ -22,8 +22,12 @@
       </v-container>
     </v-content>
 
-    <v-footer color="indigo" app>
-      <span class="white--text">&copy; 2020</span>
+    <v-footer padless>
+      <v-card flat tile width="100%" class="indigo text-center">
+        <v-card-text class="white--text">
+          {{ new Date().getFullYear() }} — <strong>Vuetify</strong>
+        </v-card-text>
+      </v-card>
     </v-footer>
   </v-app>
 </template>

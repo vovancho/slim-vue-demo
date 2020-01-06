@@ -7,12 +7,15 @@ use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\DBAL;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\ORM\Tools\Setup;
 use Psr\Container\ContainerInterface;
 
 return [
     EntityManagerInterface::class => function (ContainerInterface $container) {
         $params = $container->get('config')['doctrine'];
+        $namingStrategy = new UnderscoreNamingStrategy();
+
         $config = Setup::createAnnotationMetadataConfiguration(
             $params['metadata_dirs'],
             $params['dev_mode'],
@@ -22,11 +25,14 @@ return [
             ),
             false
         );
+        $config->setNamingStrategy($namingStrategy);
+
         foreach ($params['types'] as $type => $class) {
             if (!DBAL\Types\Type::hasType($type)) {
                 DBAL\Types\Type::addType($type, $class);
             }
         }
+
         return EntityManager::create(
             $params['connection'],
             $config
@@ -40,11 +46,13 @@ return [
             'metadata_dirs' => [
                 'src/Model/User/Entity',
                 'src/Model/OAuth/Entity',
+                'src/Model/Task/Entity',
             ],
             'connection' => [
                 'url' => getenv('API_DB_URL'),
             ],
             'types' => [
+                Type\Uuid1Type::NAME => Type\Uuid1Type::class,
                 Type\User\UserIdType::NAME => Type\User\UserIdType::class,
                 Type\User\EmailType::NAME => Type\User\EmailType::class,
                 Type\OAuth\ClientType::NAME => Type\OAuth\ClientType::class,

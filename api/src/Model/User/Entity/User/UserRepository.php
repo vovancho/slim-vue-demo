@@ -10,6 +10,8 @@ interface UserRepository
 
     public function getByEmail(Email $email): User;
 
+    public function get(UserId $id): User;
+
     public function add(User $user): void;
 
     public function getEmailById(UserId $id): Email;

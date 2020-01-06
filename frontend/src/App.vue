@@ -9,3 +9,8 @@ export default {
   name: "App"
 };
 </script>
+
+<style lang="stylus">
+  html
+    overflow-y auto !important
+</style>
