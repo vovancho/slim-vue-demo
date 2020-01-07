@@ -17,7 +17,8 @@ return function (App $app) {
 
     $app->post('/oauth/auth', Action\Auth\OAuthAction::class . ':handle');
 
-    $app->group('/task', function (RouteCollectorProxy $group) {
+    $app->group('/tasks', function (RouteCollectorProxy $group) {
+        $group->get('', Action\Task\IndexAction::class . ':handle');
         $group->post('/create', Action\Task\CreateAction::class . ':handle');
     })->add($auth);
 };

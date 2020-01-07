@@ -47,7 +47,7 @@ api-migrations:
 	docker-compose run --rm api-php-cli php bin/console doctrine:migrations:migrate --no-interaction
 
 api-fixtures:
-	docker-compose run --rm api-php-cli php bin/console doctrine:fixtures:load --no-interaction
+	docker-compose run --rm api-php-cli php bin/app.php fixtures:load
 
 api-ready:
 	docker run --rm -v ${PWD}/api:/tmp --workdir=/tmp alpine touch .ready

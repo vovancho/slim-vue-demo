@@ -105,4 +105,9 @@ class Task implements AggregateRoot
     {
         return $this->pushedAt;
     }
+
+    public function getName()
+    {
+        return $this->name;
+    }
 }

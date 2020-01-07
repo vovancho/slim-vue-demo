@@ -6,5 +6,5 @@ namespace Api\Model\Task\Entity\Task;
 
 interface TaskRepository
 {
-    public function add(Task $task): void;
+    public function add(Task $task, Position $position): void;
 }

@@ -112,7 +112,7 @@
                 <v-spacer />
                 <v-btn
                   v-if="!isConfirming"
-                  @click="signup"
+                  @click="signupClicked"
                   color="primary"
                   large
                   :loading="loading"
@@ -120,7 +120,7 @@
                 </v-btn>
                 <v-btn
                   v-else
-                  @click="confirm"
+                  @click="confirmClicked"
                   color="primary"
                   large
                   :loading="loading"
@@ -137,9 +137,8 @@
 
 <script>
 import Vue from "vue";
-import axios from "axios";
 import form from "../mixins/form";
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   mixins: [form],
@@ -185,10 +184,11 @@ export default {
     ...mapGetters(["isLogged"])
   },
   methods: {
+    ...mapActions(["signup", "signupConfirm"]),
     loginView() {
       this.$router.push({ name: "login" });
     },
-    async confirm() {
+    async confirmClicked() {
       this.error = null;
 
       const valid = await this.$refs.confirm.validate();
@@ -198,7 +198,7 @@ export default {
           this.loading = true;
           let preparedForm = this.prepareForm(this.confirmForm);
 
-          await axios.post("/auth/signup/confirm", preparedForm);
+          await this.signupConfirm(preparedForm);
           await this.$router.push({ name: "login" });
           this.loading = false;
         } catch (error) {
@@ -218,7 +218,7 @@ export default {
         }
       }
     },
-    async signup() {
+    async signupClicked() {
       this.error = null;
       const valid = await this.$refs.signup.validate();
 
@@ -227,7 +227,7 @@ export default {
           this.loading = true;
           let preparedForm = this.prepareForm(this.signUpForm);
 
-          await axios.post("/auth/signup", preparedForm);
+          await this.signup(preparedForm);
           this.$store.commit("changeCurrentEmail", this.signUpForm.email.value);
           this.confirming();
           this.loading = false;
@@ -255,7 +255,6 @@ export default {
     },
     removeReadonly() {
       this.authReadonly = false;
-      console.log(this.$router.currentRoute);
     },
     confirming() {
       this.confirmForm.email.value = this.signUpForm.email.value;

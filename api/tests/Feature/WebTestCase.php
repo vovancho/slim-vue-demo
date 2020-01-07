@@ -45,7 +45,9 @@ class WebTestCase extends TestCase
         array $serverParams = []
     ): Request
     {
-        $uri = new Uri('', '', 80, $path);
+        preg_match('/(.*)\?(.*)|(.*)/', $path, $matches);
+
+        $uri = new Uri('', '', 80, $matches[3] ?? $matches[1], $matches[2] ?? '');
         $handle = fopen('php://temp', 'w+');
         $stream = (new StreamFactory())->createStreamFromResource($handle);
 

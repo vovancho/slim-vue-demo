@@ -62,7 +62,6 @@ return [
     Server\Repositories\AccessTokenRepositoryInterface::class => \DI\autowire(Infrastructure\Entity\AccessTokenRepository::class),
     Server\Repositories\RefreshTokenRepositoryInterface::class => \DI\autowire(Infrastructure\Entity\RefreshTokenRepository::class),
     Server\Repositories\UserRepositoryInterface::class => \DI\autowire(Infrastructure\Entity\UserRepository::class),
-    Api\Model\OAuth\Entity\AccessTokenEntity::class => \DI\create(Api\Model\OAuth\Entity\AccessTokenEntity::class)->property('repo', \DI\get(Api\Model\User\Entity\User\UserRepository::class)),
 
     'config' => [
         'oauth' => [

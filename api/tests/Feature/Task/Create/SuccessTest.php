@@ -22,16 +22,20 @@ class SuccessTest extends WebTestCase
     public function testGuest(): void
     {
         $this->expectExceptionMessage('Method not allowed. Must be one of: POST');
-        $response = $this->get('/task/create');
+        $response = $this->get('/tasks/create');
         self::assertEquals(401, $response->getStatusCode());
     }
 
-    public function testSuccess(): void
+    /**
+     * @dataProvider taskTypesProvider
+     * @param $taskType
+     */
+    public function testSuccess($taskType): void
     {
         $auth = $this->getAuth();
 
-        $response = $this->post('/task/create', [
-            'type' => $type = Task::TYPE_PRIVATE,
+        $response = $this->post('/tasks/create', [
+            'type' => $type = $taskType,
             'name' => $name = 'Name',
         ], $auth->getHeaders());
 
@@ -44,6 +48,14 @@ class SuccessTest extends WebTestCase
         self::assertNotEmpty($data['id']);
         self::assertArrayHasKey('pushed_at', $data);
         self::assertNotEmpty($data['pushed_at']);
+    }
+
+    public function taskTypesProvider()
+    {
+        return [
+            [Task::TYPE_PRIVATE],
+            [Task::TYPE_PUBLIC],
+        ];
     }
 
     private function getAuth(): AuthFixture

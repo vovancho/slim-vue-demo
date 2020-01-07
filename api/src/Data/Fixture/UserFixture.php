@@ -26,6 +26,8 @@ class UserFixture extends AbstractFixture
         $manager->persist($user);
 
         $manager->flush();
+
+        $this->addReference('user', $user);
     }
 }
 

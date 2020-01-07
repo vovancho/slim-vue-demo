@@ -2,10 +2,15 @@ import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
+import tasks from "./modules/tasks";
+import { base as api } from "../api";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
+  modules: {
+    tasks
+  },
   state: {
     currentEmail: null,
     user: JSON.parse(localStorage.getItem("user"))
@@ -13,6 +18,13 @@ export default new Vuex.Store({
   getters: {
     isLogged: state => {
       return !!state.user;
+    },
+    userId: state => {
+      if (state.user) {
+        let payload = jwt_decode(state.user.access_token);
+        return payload.sub;
+      }
+      return null;
     },
     userEmail: state => {
       if (state.user) {
@@ -37,15 +49,7 @@ export default new Vuex.Store({
     async login({ commit }, data) {
       commit("logout");
       try {
-        let response = await axios.post("/oauth/auth", {
-          grant_type: "password",
-          username: data.email,
-          password: data.password,
-          client_id: "app",
-          client_secret: "",
-          access_type: "offline"
-        });
-
+        let response = await api.login(data.email, data.password);
         const user = response.data;
         localStorage.setItem("user", JSON.stringify(user));
         axios.defaults.headers.common["Authorization"] =
@@ -70,13 +74,7 @@ export default new Vuex.Store({
         delete axios.defaults.headers.common["Authorization"];
 
         try {
-          let response = await axios.post("/oauth/auth", {
-            grant_type: "refresh_token",
-            refresh_token: state.user.refresh_token,
-            client_id: "app",
-            client_secret: ""
-          });
-
+          let response = await api.refreshToken(state.user.refresh_token);
           const user = response.data;
           localStorage.setItem("user", JSON.stringify(user));
           axios.defaults.headers.common["Authorization"] =
@@ -90,7 +88,12 @@ export default new Vuex.Store({
           throw error;
         }
       }
+    },
+    signup(context, { email, password }) {
+      return api.signup(email, password);
+    },
+    signupConfirm(context, { email, token }) {
+      return api.signupConfirm(email, token);
     }
-  },
-  modules: {}
+  }
 });

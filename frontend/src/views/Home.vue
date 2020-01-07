@@ -10,15 +10,8 @@
     </v-app-bar>
 
     <v-content>
-      <v-container class="fill-height" fluid>
-        <v-card
-          class="mx-auto mt-5"
-          max-width="344"
-          outlined
-          :loading="loading"
-        >
-          <v-card-text> Name: {{ name }}, Version: {{ version }}</v-card-text>
-        </v-card>
+      <v-container class="fill-height">
+        <tasks/>
       </v-container>
     </v-content>
 
@@ -35,8 +28,12 @@
 <script>
 import axios from "axios";
 import { mapActions, mapGetters } from "vuex";
+import tasks from "../components/Tasks.vue";
 
 export default {
+  components: {
+    tasks,
+  },
   data() {
     return {
       name: null,

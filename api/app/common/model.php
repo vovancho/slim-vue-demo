@@ -26,6 +26,7 @@ return [
     TaskModel\Entity\Task\TaskRepository::class => \DI\autowire(TaskInfrastructure\Entity\DoctrineTaskRepository::class),
 
     ReadModel\User\UserReadRepository::class => \DI\autowire(Infrastructure\ReadModel\User\DoctrineUserReadRepository::class),
+    ReadModel\Task\TaskReadRepository::class => \DI\autowire(Infrastructure\ReadModel\Task\DoctrineTaskReadRepository::class),
 
     'config' => [
         'auth' => [

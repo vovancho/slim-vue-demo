@@ -7,6 +7,7 @@ namespace Api\Model\Task\UseCase\Task;
 
 use Api\Model\Base\Uuid1;
 use Api\Model\Flusher;
+use Api\Model\Task\Entity\Task\Position;
 use Api\Model\Task\Entity\Task\Task;
 use Api\Model\Task\Entity\Task\TaskRepository;
 use Api\Model\User\Entity\User\UserId;
@@ -41,8 +42,9 @@ class Handler
             $command->name
         );
 
-        $this->tasks->add($task);
+        $position = new Position($task);
 
+        $this->tasks->add($task, $position);
         $this->flusher->flush($task);
 
         return $task;
