@@ -2,6 +2,7 @@ version: '3'
 services:
 
   api-nginx:
+    container_name: api-nginx
     build:
       context: ./api/docker
       dockerfile: nginx.docker
@@ -13,6 +14,7 @@ services:
     - api-php-fpm
 
   api-php-cli:
+    container_name: api-php-cli
     build:
       context: ./api/docker
       dockerfile: php-cli.docker
@@ -25,6 +27,7 @@ services:
     tty: true
 
   api-php-fpm:
+    container_name: api-php-fpm
     build:
       context: ./api/docker
       dockerfile: php-fpm.docker
@@ -35,6 +38,7 @@ services:
     working_dir: /var/www/api
 
   project-db:
+    container_name: project-db
     image: postgres:11.2-alpine
     volumes:
     - manager-postgres:/var/lib/postgresql/data
@@ -52,6 +56,7 @@ services:
 #    working_dir: /var/www/frontend
 
   frontend-node:
+    container_name: frontend-node
     build:
       context: ./frontend/docker/node
       args:
@@ -77,6 +82,29 @@ services:
     ports:
     - "1025:1025"
     - "8082:8025"
+
+  project-ws:
+    container_name: project-ws
+    image: node:10.11-jessie
+    volumes:
+      - ./websocket:/var/www/websocket
+    ports:
+      - "8084:8000"
+    working_dir: /var/www/websocket
+    tty: true
+
+  project-amqp:
+    container_name: project-amqp
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_ERLANG_COOKIE: KFGFIODIFGJGNISDNCND
+      RABBITMQ_DEFAULT_USER: rabbit
+      RABBITMQ_DEFAULT_PASS: rabbit
+    ports:
+      - "8085:15672"
+      - "5672:5672"
+    volumes:
+      - ./rabbitmq/docker/enabled_plugins:/etc/rabbitmq/enabled_plugins
 
 volumes:
   composer:

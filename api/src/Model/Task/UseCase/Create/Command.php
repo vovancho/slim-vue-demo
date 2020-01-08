@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Api\Model\Task\UseCase\Task;
+namespace Api\Model\Task\UseCase\Create;
 
 use Symfony\Component\Validator\Constraints as Assert;
 

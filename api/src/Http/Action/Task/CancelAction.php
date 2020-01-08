@@ -8,13 +8,13 @@ namespace Api\Http\Action\Task;
 use Api\Http\JsonResponse;
 use Api\Http\ValidationException;
 use Api\Http\Validator\Validator;
-use Api\Model\Task\UseCase\Create\Command;
-use Api\Model\Task\UseCase\Create\Handler;
+use Api\Model\Task\UseCase\Cancel\Command;
+use Api\Model\Task\UseCase\Cancel\Handler;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class CreateAction implements RequestHandlerInterface
+class CancelAction implements RequestHandlerInterface
 {
     private $handler;
     private $validator;
@@ -33,23 +33,17 @@ class CreateAction implements RequestHandlerInterface
             throw new ValidationException($errors);
         }
 
-        $task = $this->handler->handle($command);
+        $this->handler->handle($command);
 
-        return new JsonResponse([
-            'id' => $task->getId()->getId(),
-            'pushed_at' => $task->getPushedAt()->format('Y-m-d H:i:s'),
-        ], 201);
+        return new JsonResponse([], 204);
     }
 
     private function deserialize(ServerRequestInterface $request): Command
     {
-        $body = $request->getParsedBody();
-
         $command = new Command();
 
         $command->user = $request->getAttribute('oauth_user_id');
-        $command->type = $body['type'] ?? '';
-        $command->name = $body['name'] ?? '';
+        $command->id = $request->getAttribute('id');
 
         return $command;
     }

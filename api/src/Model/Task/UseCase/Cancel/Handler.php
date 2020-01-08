@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Api\Model\Task\UseCase\Task;
+namespace Api\Model\Task\UseCase\Cancel;
 
 
 use Api\Model\Base\Uuid1;
 use Api\Model\Flusher;
-use Api\Model\Task\Entity\Task\Position;
 use Api\Model\Task\Entity\Task\Task;
 use Api\Model\Task\Entity\Task\TaskRepository;
+use Api\Model\User\Entity\User\User;
 use Api\Model\User\Entity\User\UserId;
 use Api\Model\User\Entity\User\UserRepository;
+use Zend\EventManager\Exception\DomainException;
 
 class Handler
 {
@@ -30,23 +31,19 @@ class Handler
         $this->flusher = $flusher;
     }
 
-    public function handle(Command $command): Task
+    public function handle(Command $command)
     {
+        /** @var User $user */
         $user = $this->users->get(new UserId($command->user));
+        /** @var Task $task */
+        $task = $this->tasks->get(new Uuid1($command->id));
 
-        $task = new Task(
-            $id = Uuid1::next(),
-            new \DateTimeImmutable(),
-            $user,
-            $command->type,
-            $command->name
-        );
+        if ($task->getUser()->getId()->getId() !== $user->getId()->getId()) {
+            throw new DomainException('Задача не принадлежит пользователю.');
+        }
 
-        $position = new Position($task);
+        $task->cancel();
 
-        $this->tasks->add($task, $position);
         $this->flusher->flush($task);
-
-        return $task;
     }
 }

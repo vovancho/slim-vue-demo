@@ -42,7 +42,7 @@ class DoctrineTaskReadRepository implements TaskReadRepository
             ->from('task_positions', 'p');
 
         return $this->em->getConnection()->createQueryBuilder()
-            ->select(['t.id', 't.pushed_at', 't.user_id', 'u.email', 't.type', 't.name', 't.status', 't.process_percent', 't.error_message', 'p.position'])
+            ->select(['t.id', 't.pushed_at', 't.user_id', 'u.email AS user_email', 't.type', 't.name', 't.status', 't.process_percent', 't.error_message', 'p.position'])
             ->from('task_tasks', 't')
             ->leftJoin('t', sprintf('(%s)', $subPosition->getSQL()), 'p', 't.id = p.task_id')
             ->leftJoin('t', 'user_users', 'u', 't.user_id = u.id')
@@ -64,7 +64,7 @@ class DoctrineTaskReadRepository implements TaskReadRepository
     private function sortValidate(array $sortBy): bool
     {
         foreach ($sortBy as $sortByAttr) {
-            if (!in_array($sortByAttr, ['id', 'pushed_at', 'email', 'type', 'name', 'status', 'process_percent'])) {
+            if (!in_array($sortByAttr, ['id', 'pushed_at', 'user_email', 'type', 'name', 'status', 'process_percent'])) {
                 return false;
             }
         }

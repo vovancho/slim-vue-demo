@@ -46,7 +46,7 @@ class IndexAction implements RequestHandlerInterface
             'id' => $task['id'],
             'pushed_at' => $task['pushed_at'],
             'user_id' => $task['user_id'],
-            'user_email' => $task['email'],
+            'user_email' => $task['user_email'],
             'type' => $task['type'],
             'name' => $task['name'],
             'status' => $task['status'],

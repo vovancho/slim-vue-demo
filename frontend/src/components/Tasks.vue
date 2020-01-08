@@ -59,6 +59,7 @@
 <script>
 import { createNamespacedHelpers } from "vuex";
 import { mapGetters as mapRootGetters } from "vuex";
+
 const { mapState, mapActions } = createNamespacedHelpers("tasks");
 const WAIT = "wait";
 const EXECUTE = "execute";
@@ -72,11 +73,7 @@ export default {
       grid: {
         loading: false,
         headers: [
-          {
-            text: "ID",
-            align: "left",
-            value: "id"
-          },
+          { text: "Пользователь", value: "user_email" },
           { text: "Дата", value: "pushed_at" },
           { text: "Задача", value: "name" },
           { text: "Статус", value: "status" },
