@@ -22,6 +22,7 @@ class CanceledListener
     {
         $data = [
             'event' => TaskCanceled::class,
+            'user_id' => $event->user->getId()->getId(),
         ];
 
         $message = new AMQPMessage(

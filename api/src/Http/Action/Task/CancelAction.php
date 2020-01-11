@@ -41,9 +41,8 @@ class CancelAction implements RequestHandlerInterface
     private function deserialize(ServerRequestInterface $request): Command
     {
         $command = new Command();
-
         $command->user = $request->getAttribute('oauth_user_id');
-        $command->id = $request->getAttribute('id');
+        $command->id = $request->getAttribute('route')->getArgument('id');
 
         return $command;
     }

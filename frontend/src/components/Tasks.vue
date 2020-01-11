@@ -7,12 +7,18 @@
           :items="items.rows"
           :options.sync="grid.options"
           :server-items-length="items.total"
-          :loading="grid.loading"
+          :loading="grid.loading || processing"
           class="elevation-1"
         >
+          <template v-slot:top>
+            <div class="pa-2">
+              <tasks-new-item />
+            </div>
+          </template>
+
           <template #item.status="{ item }">
             <v-chip :color="statusChip(item.status)" text-color="white">
-              <v-avatar v-if="isExecuting(item.status)">
+              <v-avatar class="mr-1" v-if="isExecuting(item.status)">
                 <v-progress-circular
                   class="caption"
                   color="teal lighten-5"
@@ -59,6 +65,7 @@
 <script>
 import { createNamespacedHelpers } from "vuex";
 import { mapGetters as mapRootGetters } from "vuex";
+import TasksNewItem from "./TasksNewItem.vue";
 
 const { mapState, mapActions } = createNamespacedHelpers("tasks");
 const WAIT = "wait";
@@ -68,6 +75,9 @@ const ERROR = "error";
 const CANCEL = "cancel";
 
 export default {
+  components: {
+    TasksNewItem
+  },
   data() {
     return {
       grid: {
@@ -91,7 +101,7 @@ export default {
   },
   computed: {
     ...mapRootGetters(["userId"]),
-    ...mapState(["items"])
+    ...mapState(["items", "processing"])
   },
   async mounted() {
     this.$watch(
@@ -101,11 +111,12 @@ export default {
       },
       { deep: true }
     );
+    this.wsNotificationsInit();
 
     this.getTasksByGrid();
   },
   methods: {
-    ...mapActions(["getTasks"]),
+    ...mapActions(["getTasks", "cancelTask", "wsNotificationsInit"]),
     statusText(status) {
       switch (status) {
         case WAIT:
@@ -161,7 +172,29 @@ export default {
       return [WAIT, EXECUTE].includes(status) && userId === this.userId;
     },
     async cancelTaskClick(id) {
-      console.log(id);
+      let taskName = this.items.rows.find(item => item.id === id).name;
+      let res = await this.$dialog.confirm({
+        text: `вы уверены что хотите отменить задачу "${taskName}"?`,
+        title: "Подтверждение"
+      });
+
+      if (res) {
+        try {
+          this.grid.loading = true;
+          await this.cancelTask(id);
+          this.grid.loading = false;
+        } catch (error) {
+          if (error.response) {
+            this.$dialog.error({
+              text: error.response.data.error || error.response.data.message,
+              title: "Ошибка"
+            });
+          } else {
+            console.log(error.message);
+          }
+          this.grid.loading = false;
+        }
+      }
     },
     async getTasksByGrid() {
       this.grid.loading = true;

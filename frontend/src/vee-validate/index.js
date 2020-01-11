@@ -1,4 +1,4 @@
-import { required, email, min } from "vee-validate/dist/rules";
+import { required, email, min, max, oneOf } from "vee-validate/dist/rules";
 import { extend, localize } from "vee-validate";
 import ru from "vee-validate/dist/locale/ru.json";
 import Vue from "vue";
@@ -16,6 +16,14 @@ extend("email", {
 
 extend("min", {
   ...min
+});
+
+extend("max", {
+  ...max
+});
+
+extend("oneOf", {
+  ...oneOf
 });
 
 Vue.component("ValidationProvider", ValidationProvider);

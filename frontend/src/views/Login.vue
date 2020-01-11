@@ -132,7 +132,7 @@ export default {
           await this.$router.push({ name: "home" });
         } catch (error) {
           if (error.response) {
-            this.error = error.response.data.error;
+            this.error = error.response.data.error || error.response.data.message;
           } else {
             console.log(error.message);
           }

@@ -108,7 +108,7 @@ class Task implements AggregateRoot
         }
 
         $this->status = self::STATUS_EXECUTE;
-        $this->recordEvent(new TaskExecuted($this->getId()));
+        $this->recordEvent(new TaskExecuted($this->getId(), $this->getUser()));
     }
 
     public function addPercent(int $percentAdded)
@@ -120,18 +120,22 @@ class Task implements AggregateRoot
         $percent += $percentAdded;
         $this->setProcessPercent($percent);
         if ($this->getProcessPercent() < 100) {
-            $this->recordEvent(new TaskProcessed(clone $this));
+            $this->recordEvent(new TaskProcessed(clone $this, $this->getUser()));
         }
     }
 
     public function complete()
     {
+        if (!$this->isExecute()) {
+            throw new \DomainException('Задание может быть выполнено только в статусе выполнения.');
+        }
+
         if ($this->getProcessPercent() < 100) {
             throw new \DomainException('Задание не может быть выполнено с процентом выполнения меньше 100.');
         }
 
         $this->status = self::STATUS_COMPLETE;
-        $this->recordEvent(new TaskCompleted(clone $this));
+        $this->recordEvent(new TaskCompleted(clone $this, $this->getUser()));
     }
 
     public function cancel()
@@ -140,7 +144,7 @@ class Task implements AggregateRoot
             throw new \DomainException('Задание не может быть отменено.');
         }
         $this->status = self::STATUS_CANCEL;
-        $this->recordEvent(new TaskCanceled($this->getId()));
+        $this->recordEvent(new TaskCanceled($this->getId(), $this->getUser()));
     }
 
     public function error(\Exception $e)
@@ -154,7 +158,7 @@ class Task implements AggregateRoot
             'trace' => $e->getTraceAsString(),
         ]);
         $this->setErrorMessage($json);
-        $this->recordEvent(new TaskError(clone $this));
+        $this->recordEvent(new TaskError(clone $this, $this->getUser()));
     }
 
     public function isWait(): bool
@@ -180,6 +184,16 @@ class Task implements AggregateRoot
     public function isInterrupted(): bool
     {
         return in_array($this->status, [self::STATUS_CANCEL, self::STATUS_ERROR]);
+    }
+
+    public function isCancel(): bool
+    {
+        return $this->status === self::STATUS_CANCEL;
+    }
+
+    public function isError(): bool
+    {
+        return $this->status === self::STATUS_ERROR;
     }
 
     public static function getTypes(): array

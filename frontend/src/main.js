@@ -3,17 +3,19 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import vuetify from "./plugins/vuetify";
+import VuetifyDialog from "vuetify-dialog";
 import axios from "axios";
-import VueTheMask from 'vue-the-mask';
+import VueTheMask from "vue-the-mask";
 import "./vee-validate/index";
 
 Vue.config.productionTip = false;
 
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 
-const user = JSON.parse(localStorage.getItem('user'));
+const user = JSON.parse(localStorage.getItem("user"));
 if (user) {
-  axios.defaults.headers.common['Authorization'] = 'Bearer ' + user.access_token;
+  axios.defaults.headers.common["Authorization"] =
+    "Bearer " + user.access_token;
 }
 
 axios.interceptors.response.use(null, error => {
@@ -27,17 +29,40 @@ axios.interceptors.response.use(null, error => {
       return Promise.reject(error);
     }
   }
-  return store.dispatch('refresh')
+  return store
+    .dispatch("refresh")
     .then(() => {
-      return new Promise((resolve) => {
-        request.headers['Authorization'] = 'Bearer ' + store.state.user.access_token;
-        resolve(axios(request))
-      })
+      return new Promise(resolve => {
+        request.headers["Authorization"] =
+          "Bearer " + store.state.user.access_token;
+        resolve(axios(request));
+      });
     })
     .catch(() => {
-      router.push({name: 'login'});
-      return Promise.reject(error)
+      router.push({ name: "login" });
+      return Promise.reject(error);
     });
+});
+
+Vue.use(VuetifyDialog, {
+  context: {
+    vuetify
+  },
+  confirm: {
+    actions: {
+      false: "Отмена",
+      true: {
+        text: "Применить",
+        color: "primary"
+      }
+    }
+  },
+  error: {
+    icon: false,
+    actions: {
+      false: "Закрыть"
+    }
+  }
 });
 
 Vue.use(VueTheMask);

@@ -22,8 +22,8 @@ class CreatedListener
     {
         $data = [
             'event' => TaskCreated::class,
-            'type' => $event->type,
             'user_id' => $event->user->getId()->getId(),
+            'type' => $event->type,
         ];
 
         $message = new AMQPMessage(

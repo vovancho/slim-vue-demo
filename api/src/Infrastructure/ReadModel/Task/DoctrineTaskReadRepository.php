@@ -57,7 +57,7 @@ class DoctrineTaskReadRepository implements TaskReadRepository
                 $query->addOrderBy($sortByAttr, $pagination->orderByAttr($sortByAttr));
             }
         } else {
-            $query->orderBy('id', 'DESC');
+            $query->orderBy('pushed_at', 'DESC');
         }
     }
 

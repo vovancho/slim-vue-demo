@@ -8,6 +8,7 @@ namespace Api\Test\Builder\Task;
 use Api\Model\Base\Uuid1;
 use Api\Model\Task\Entity\Task\Task;
 use Api\Model\User\Entity\User\User;
+use Api\Test\Builder\User\UserBuilder;
 
 class TaskBuilder
 {
@@ -23,6 +24,7 @@ class TaskBuilder
         $this->pushedAt = new \DateTimeImmutable();
         $this->type = Task::TYPE_PUBLIC;
         $this->name = 'Task1';
+        $this->user = $this->user();
     }
 
     public function withId(Uuid1 $id): self
@@ -69,5 +71,10 @@ class TaskBuilder
             $this->type,
             $this->name
         );
+    }
+
+    private function user(): User
+    {
+        return (new UserBuilder())->build();
     }
 }

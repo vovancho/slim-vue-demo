@@ -49,6 +49,9 @@ api-migrations:
 api-fixtures:
 	docker-compose run --rm api-php-cli php bin/app.php fixtures:load
 
+api-process-consumer:
+	docker-compose run --rm api-php-cli php bin/app.php tasks:process
+
 api-ready:
 	docker run --rm -v ${PWD}/api:/tmp --workdir=/tmp alpine touch .ready
 
@@ -66,3 +69,6 @@ api-test-unit:
 
 api-test-unit-coverage:
 	docker-compose run --rm api-php-cli vendor/bin/phpunit --testsuite=unit --coverage-clover var/clover.xml --coverage-html var/coverage
+
+ws-start:
+	docker-compose exec project-ws npm run start

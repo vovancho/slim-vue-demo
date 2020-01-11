@@ -3,7 +3,7 @@
     "description": "Demo API Task handler application",
     "license": "MIT",
     "require": {
-        "php": ">=7.1",
+        "php": ">=7.4",
         "ext-json": "*",
         "doctrine/migrations": "^2.2",
         "doctrine/orm": "^2.7",

@@ -22,6 +22,7 @@ class ErrorListener
     {
         $data = [
             'event' => TaskError::class,
+            'user_id' => $event->user->getId()->getId(),
             'task' => [
                 'id' => $event->task->getId()->getId(),
                 'status' => $event->task->getStatus(),

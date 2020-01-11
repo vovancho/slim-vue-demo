@@ -204,7 +204,7 @@ export default {
         } catch (error) {
           if (error.response) {
             if (error.response.data.error) {
-              this.error = error.response.data.error;
+              this.error = error.response.data.error || error.response.data.message;
             } else if (error.response.data.errors) {
               this.confirmForm = this.assignErrors(
                 this.confirmForm,
@@ -234,7 +234,7 @@ export default {
         } catch (error) {
           if (error.response) {
             if (error.response.data.error) {
-              this.error = error.response.data.error;
+              this.error = error.response.data.error || error.response.data.message;
             } else if (error.response.data.errors) {
               this.signUpForm = this.assignErrors(
                 this.signUpForm,

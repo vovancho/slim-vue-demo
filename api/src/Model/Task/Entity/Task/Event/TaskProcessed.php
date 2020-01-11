@@ -6,13 +6,16 @@ namespace Api\Model\Task\Entity\Task\Event;
 
 
 use Api\Model\Task\Entity\Task\Task;
+use Api\Model\User\Entity\User\User;
 
 class TaskProcessed
 {
     public $task;
+    public $user;
 
-    public function __construct(Task $task)
+    public function __construct(Task $task, User $user)
     {
         $this->task = $task;
+        $this->user = $user;
     }
 }

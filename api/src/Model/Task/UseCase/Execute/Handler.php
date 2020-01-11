@@ -38,7 +38,7 @@ class Handler
                 $this->flusher->flush($task);
             }
 
-            while ($task->isExecuting()) {
+            while ($task->isExecuting()) { // TODO $task not updated
                 $this->processMock($task, $errorCase);
 
                 try {

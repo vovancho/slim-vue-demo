@@ -22,6 +22,7 @@ class ExecutedListener
     {
         $data = [
             'event' => TaskExecuted::class,
+            'user_id' => $event->user->getId()->getId(),
         ];
 
         $message = new AMQPMessage(

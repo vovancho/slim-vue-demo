@@ -30,6 +30,12 @@ const base = {
 const tasks = {
   getTasks(options) {
     return axios.get("/tasks", { params: options });
+  },
+  createTask(name, type) {
+    return axios.post("/tasks/create", { name, type });
+  },
+  cancelTask(id) {
+    return axios.post(`/tasks/${id}/cancel`);
   }
 };
 

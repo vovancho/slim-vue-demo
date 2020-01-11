@@ -22,6 +22,7 @@ class ProcessedListener
     {
         $data = [
             'event' => TaskProcessed::class,
+            'user_id' => $event->user->getId()->getId(),
             'task' => [
                 'id' => $event->task->getId()->getId(),
                 'status' => $event->task->getStatus(),
