@@ -40,8 +40,15 @@ amqp.connect(process.env.WS_AMQP_URI, function(err, conn) {
 
       server.clients.forEach(ws => {
         console.log('sending:', ws.user_id, value.user_id, ws.user_id === value.user_id);
-        if (ws.user_id === value.user_id) {
-          ws.send(message.content.toString());
+        switch (value.type) {
+          case 'private':
+            if (ws.user_id === value.user_id) {
+              ws.send(message.content.toString());
+            }
+            break;
+          case 'public':
+            ws.send(message.content.toString());
+            break;
         }
       })
     }, {noAck: true});

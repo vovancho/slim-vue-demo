@@ -11,11 +11,13 @@ use Api\Model\User\Entity\User\User;
 class TaskExecuted
 {
     public $id;
+    public $type;
     public $user;
 
-    public function __construct(Uuid1 $id, User $user)
+    public function __construct(Uuid1 $id, string $type, User $user)
     {
         $this->id = $id;
+        $this->type = $type;
         $this->user = $user;
     }
 }

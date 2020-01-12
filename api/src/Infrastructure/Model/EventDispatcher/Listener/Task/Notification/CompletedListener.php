@@ -23,6 +23,7 @@ class CompletedListener
         $data = [
             'event' => TaskCompleted::class,
             'user_id' => $event->user->getId()->getId(),
+            'type' => $event->type,
             'task' => [
                 'id' => $event->task->getId()->getId(),
                 'status' => $event->task->getStatus(),

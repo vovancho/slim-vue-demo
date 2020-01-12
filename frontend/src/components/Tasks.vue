@@ -9,11 +9,21 @@
           :server-items-length="items.total"
           :loading="grid.loading || processing"
           class="elevation-1"
+          show-expand
         >
           <template v-slot:top>
             <div class="pa-2">
               <tasks-new-item />
             </div>
+          </template>
+
+          <template #item.user_email="{ item }">
+           <p :class="item.user_id === userId ? 'primary--text font-weight-bold' : ''">{{ item.user_email }}</p>
+          </template>
+
+          <template #item.name="{ item }">
+            {{ item.name }}
+            <v-icon v-if="item.type === 'private'">mdi-lock</v-icon>
           </template>
 
           <template #item.status="{ item }">
@@ -38,23 +48,57 @@
             </v-chip>
           </template>
 
-          <template #item.actions="{ item }">
-            <v-tooltip left v-if="canCancel(item.status, item.user_id)">
-              <template #activator="{ on }">
-                <v-btn
-                  text
-                  icon
-                  dark
-                  small
-                  color="red"
-                  v-on="on"
-                  @click="cancelTaskClick(item.id)"
-                >
-                  <v-icon dark>mdi-cancel</v-icon>
-                </v-btn>
-              </template>
-              <span>Отменить выполнение задачи</span>
-            </v-tooltip>
+          <template #item.data-table-expand="{ item, isExpanded, expand }">
+            <v-layout class="align-center">
+              <v-tooltip left v-if="canCancel(item.status, item.user_id)">
+                <template #activator="{ on }">
+                  <v-btn
+                    text
+                    icon
+                    dark
+                    small
+                    color="red"
+                    v-on="on"
+                    @click="cancelTaskClick(item.id)"
+                  >
+                    <v-icon dark>mdi-cancel</v-icon>
+                  </v-btn>
+                </template>
+                <span>Отменить выполнение задачи</span>
+              </v-tooltip>
+              <v-btn
+                color="error"
+                fab
+                x-small
+                @click="expand(true)"
+                v-if="item.status === 'error' && !isExpanded"
+              >
+                <v-icon>mdi-alert-circle-outline</v-icon>
+              </v-btn>
+              <v-btn
+                color="primary"
+                fab
+                x-small
+                @click="expand(false)"
+                v-if="item.status === 'error' && isExpanded"
+              >
+                <v-icon>mdi-arrow-collapse-up</v-icon>
+              </v-btn>
+            </v-layout>
+          </template>
+
+          <template #expanded-item="{ headers, item }">
+            <td :colspan="headers.length">
+              <v-card class="my-3 red lighten-5" tile v-if="item.error_message">
+                <v-card-title class="error-message-trace red--text darken-4">
+                  {{ item.error_message.message }}
+                </v-card-title>
+                <v-divider />
+                <v-card-text class="error-message-trace brown--text darken-4">
+                  {{ item.error_message.trace }}
+                </v-card-text>
+              </v-card>
+            </td>
           </template>
         </v-data-table>
       </v-card-text>
@@ -87,7 +131,7 @@ export default {
           { text: "Дата", value: "pushed_at" },
           { text: "Задача", value: "name" },
           { text: "Статус", value: "status" },
-          { text: "", value: "actions", sortable: false }
+          { text: "", value: "data-table-expand" }
         ],
         options: {},
         rowsPerPage: [
@@ -204,3 +248,8 @@ export default {
   }
 };
 </script>
+
+<style lang="stylus">
+.error-message-trace
+  white-space: pre-line
+</style>

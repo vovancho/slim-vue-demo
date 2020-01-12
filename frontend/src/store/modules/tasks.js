@@ -16,6 +16,12 @@ const getters = {};
 const actions = {
   async getTasks({ commit }, options) {
     let response = await api.getTasks(options);
+    response.data.rows = response.data.rows.map(item => {
+      item.error_message = item.error_message
+        ? JSON.parse(item.error_message)
+        : item.error_message;
+      return item;
+    });
     commit("setTasks", response.data);
   },
   async createTask(context, { name, type }) {

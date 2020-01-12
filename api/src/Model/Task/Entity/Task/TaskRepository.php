@@ -8,7 +8,7 @@ use Api\Model\Base\Uuid1;
 
 interface TaskRepository
 {
-    public function get(Uuid1 $id): Task;
+    public function get(Uuid1 $id, $force = false): Task;
 
     public function add(Task $task, Position $position): void;
 

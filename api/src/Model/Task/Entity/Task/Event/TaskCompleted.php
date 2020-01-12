@@ -11,11 +11,13 @@ use Api\Model\User\Entity\User\User;
 class TaskCompleted
 {
     public $task;
+    public $type;
     public $user;
 
-    public function __construct(Task $task, User $user)
+    public function __construct(Task $task, string $type, User $user)
     {
         $this->task = $task;
+        $this->type = $type;
         $this->user = $user;
     }
 }

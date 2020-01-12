@@ -32,6 +32,7 @@ class CancelTest extends TestCase
         self::assertNotEmpty($canceledEvents);
         $canceledEvent = array_shift($canceledEvents);
         self::assertEquals($task->getId(), $canceledEvent->id);
+        self::assertEquals($task->getType(), $canceledEvent->type);
         self::assertEquals($task->getUser(), $canceledEvent->user);
     }
 
@@ -56,6 +57,7 @@ class CancelTest extends TestCase
         self::assertNotEmpty($canceledEvents);
         $canceledEvent = array_shift($canceledEvents);
         self::assertEquals($task->getId(), $canceledEvent->id);
+        self::assertEquals($task->getType(), $canceledEvent->type);
         self::assertEquals($task->getUser(), $canceledEvent->user);
     }
 

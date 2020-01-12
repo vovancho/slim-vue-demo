@@ -30,7 +30,7 @@ class TasksFixture extends AbstractFixture implements OrderedFixtureInterface
             $manager->persist($position);
         }
 
-        $manager->flush();
+//        $manager->flush();
     }
 
     public function getOrder()

@@ -32,6 +32,7 @@ class ProcessedTest extends TestCase
         self::assertNotEmpty($processedEvents);
         $processedEvent = array_shift($processedEvents);
         self::assertEquals($task->getId(), $processedEvent->task->getId());
+        self::assertEquals($task->getType(), $processedEvent->type);
         self::assertEquals($task->getUser(), $processedEvent->user);
     }
 

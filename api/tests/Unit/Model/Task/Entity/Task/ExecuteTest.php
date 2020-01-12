@@ -28,6 +28,7 @@ class ExecuteTest extends TestCase
         self::assertNotEmpty($executedEvents);
         $executedEvent = array_shift($executedEvents);
         self::assertEquals($task->getId(), $executedEvent->id);
+        self::assertEquals($task->getType(), $executedEvent->type);
         self::assertEquals($task->getUser(), $executedEvent->user);
     }
 

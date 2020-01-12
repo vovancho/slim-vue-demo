@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Api\Infrastructure\ReadModel\Task;
 
 
+use Api\Model\Task\Entity\Task\Task;
 use Api\ReadModel\PaginationInterface;
 use Api\ReadModel\Task\TaskReadRepository;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -46,8 +47,10 @@ class DoctrineTaskReadRepository implements TaskReadRepository
             ->from('task_tasks', 't')
             ->leftJoin('t', sprintf('(%s)', $subPosition->getSQL()), 'p', 't.id = p.task_id')
             ->leftJoin('t', 'user_users', 'u', 't.user_id = u.id')
-            ->andWhere('t.user_id = :user')
-            ->setParameter(':user', $userId);
+            ->andWhere('t.type = :public_type OR (t.user_id = :user AND t.type = :private_type)')
+            ->setParameter(':user', $userId)
+            ->setParameter(':public_type', Task::TYPE_PUBLIC)
+            ->setParameter(':private_type', Task::TYPE_PRIVATE);
     }
 
     private function setSort(QueryBuilder $query, PaginationInterface $pagination): void

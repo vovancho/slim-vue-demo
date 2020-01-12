@@ -23,56 +23,62 @@ class Handler
         $this->flusher = $flusher;
     }
 
-    public function handle(Command $command)
+    public function handle(Command $command): void
     {
         $errorCase = rand(1, 100) > 100;
 
         try {
-            /** @var Task $task */
-            $task = $this->tasks->get($command->id);
-            $position = $this->tasks->position($task->getId());
-            $task->setPosition($position);
-
+            $task = $this->getTask($command->id);
             if ($task->isWait()) {
                 $task->execute();
                 $this->flusher->flush($task);
-            }
 
-            while ($task->isExecuting()) { // TODO $task not updated
-                $this->processMock($task, $errorCase);
+                while ($task->isExecuting()) {
+                    sleep(rand(1, 5));
 
-                try {
-                    $task->complete();
-                    $positionEntity = $this->tasks->getPosition($task);
-                    $this->tasks->resetPosition($positionEntity);
-                } catch (\DomainException $e) {
+                    $task = $this->getTask($command->id, true);
+                    if ($task->isExecute()) {
+                        $this->tryError($task, $errorCase);
+
+                        $task->addPercent(rand(10, 25));
+                        if ($task->getProcessPercent() === 100) {
+                            $task->complete();
+                            $this->removePosition($task);
+                        }
+                        $this->flusher->flush($task);
+                    }
                 }
-                $this->flusher->flush($task);
-                /** @var Task $task */
-                $task = $this->tasks->get($command->id);
-                $position = $this->tasks->position($task->getId());
-                $task->setPosition($position);
             }
         } catch (\Exception $e) {
             if (isset($task)) {
                 $task->error($e);
-                $positionEntity = $this->tasks->getPosition($task);
-                $this->tasks->resetPosition($positionEntity);
-                $this->flusher->flush($task);
+                $this->removePosition($task);
             } else {
                 throw $e;
             }
         }
     }
 
-    protected function processMock(Task $task, $errorCase = false)
+    private function getTask($id, $force = false): Task
     {
-        sleep(rand(1, 5));
-        $task->addPercent(rand(10, 25));
-        $percent = $task->getProcessPercent();
+        $task = $this->tasks->get($id, $force);
+        $position = $this->tasks->position($task->getId());
+        $task->setPosition($position);
 
+        return $task;
+    }
+
+    private function tryError(Task $task, $errorCase = false): void
+    {
+        $percent = $task->getProcessPercent();
         if ($errorCase && $percent > 50) {
             throw new \DomainException("Ошибка на $percent процентах");
         }
+    }
+
+    private function removePosition(Task $task): void
+    {
+        $positionEntity = $this->tasks->getPosition($task);
+        $this->tasks->resetPosition($positionEntity);
     }
 }

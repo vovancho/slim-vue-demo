@@ -32,11 +32,14 @@ class DoctrineTaskRepository implements TaskRepository
         $this->em = $em;
     }
 
-    public function get(Uuid1 $id): Task
+    public function get(Uuid1 $id, $force = false): Task
     {
         /** @var Task $task */
         if (!$task = $this->repo->find($id->getId())) {
             throw new EntityNotFoundException('Задача не найдена.');
+        }
+        if ($force) {
+            $this->em->refresh($task);
         }
         return $task;
     }

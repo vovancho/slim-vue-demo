@@ -32,6 +32,7 @@ class CompleteTest extends TestCase
         self::assertNotEmpty($completedEvents);
         $completedEvent = array_shift($completedEvents);
         self::assertEquals($task->getId(), $completedEvent->task->getId());
+        self::assertEquals($task->getType(), $completedEvent->type);
         self::assertEquals($task->getUser(), $completedEvent->user);
     }
 
