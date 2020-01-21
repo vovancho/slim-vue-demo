@@ -72,3 +72,6 @@ api-test-unit-coverage:
 
 ws-start:
 	docker-compose exec project-ws npm run start
+
+api-clear-cache:
+	docker-compose run --rm api-php-cli php bin/app.php orm:clear-cache:metadata

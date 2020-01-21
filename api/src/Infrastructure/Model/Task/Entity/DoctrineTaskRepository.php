@@ -11,7 +11,6 @@ use Api\Model\Task\Entity\Task\Position;
 use Api\Model\Task\Entity\Task\Task;
 use Api\Model\Task\Entity\Task\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use PDO;
 
 class DoctrineTaskRepository implements TaskRepository
 {
@@ -44,6 +43,12 @@ class DoctrineTaskRepository implements TaskRepository
         return $task;
     }
 
+    public function add(Task $task, Position $position): void
+    {
+        $this->em->persist($task);
+        $this->em->persist($position);
+    }
+
     public function getPosition(Task $task): Position
     {
         /** @var Position $position */
@@ -51,32 +56,6 @@ class DoctrineTaskRepository implements TaskRepository
             throw new EntityNotFoundException('Позиция не найдена.');
         }
         return $position;
-    }
-
-    public function position(Uuid1 $id): int
-    {
-        $subPosition = $this->em->getConnection()->createQueryBuilder()
-            ->select(['p.task_id', 'row_number() OVER (ORDER BY task_id) AS position'])
-            ->from('task_positions', 'p');
-
-        $result = $this->em->getConnection()->createQueryBuilder()
-            ->select(['p.position'])
-            ->from('task_tasks', 't')
-            ->leftJoin('t', sprintf('(%s)', $subPosition->getSQL()), 'p', 't.id = p.task_id')
-            ->andWhere('t.id = :task')
-            ->setParameter(':task', $id->getId())
-            ->execute()->fetch(PDO::FETCH_ASSOC);
-
-        if (empty($result)) {
-            return 0;
-        }
-        return $result['position'] > 0 ? $result['position'] - 1 : 0;
-    }
-
-    public function add(Task $task, Position $position): void
-    {
-        $this->em->persist($task);
-        $this->em->persist($position);
     }
 
     public function resetPosition(Position $position): void

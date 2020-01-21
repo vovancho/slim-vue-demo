@@ -42,7 +42,7 @@ return [
     'config' => [
         'doctrine' => [
             'dev_mode' => false,
-            'cache_dir' => 'var/cache/doctrine',
+            'cache_dir' => APP_PATH . 'public/var/cache/doctrine',
             'metadata_dirs' => [
                 'src/Model/User/Entity',
                 'src/Model/OAuth/Entity',

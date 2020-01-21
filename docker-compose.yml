@@ -95,7 +95,8 @@ services:
 
   project-amqp:
     container_name: project-amqp
-    image: rabbitmq:3-management
+    build:
+      context: ./rabbitmq/docker
     environment:
       RABBITMQ_ERLANG_COOKIE: KFGFIODIFGJGNISDNCND
       RABBITMQ_DEFAULT_USER: rabbit
@@ -104,8 +105,9 @@ services:
       - "8085:15672"
       - "5672:5672"
     volumes:
-      - ./rabbitmq/docker/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - rabbitmq:/var/lib/rabbitmq
 
 volumes:
   composer:
   manager-postgres:
+  rabbitmq:

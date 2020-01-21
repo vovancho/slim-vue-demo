@@ -8,16 +8,13 @@ namespace Api\Model\Task\Entity\Task\Event;
 use Api\Model\Base\Uuid1;
 use Api\Model\User\Entity\User\User;
 
-class TaskCreated
+class TaskCreated extends TaskNotificationEvent
 {
     public $id;
-    public $type;
-    public $user;
 
-    public function __construct(Uuid1 $id, string $type, User $user)
+    public function __construct(string $type, User $user, Uuid1 $id)
     {
+        parent::__construct($type, $user);
         $this->id = $id;
-        $this->type = $type;
-        $this->user = $user;
     }
 }

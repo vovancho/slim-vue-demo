@@ -31,15 +31,12 @@ class ProcessCommand extends Command
         $this->setName('tasks:process');
     }
 
-
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('<comment>Consume messages</comment>');
 
         $consumerTag = 'consumer_' . getmypid();
         $this->channel->basic_consume(TaskJobChannel::QUEUE, $consumerTag, false, false, false, false, function ($message) use ($output) {
-
-
             $body = json_decode($message->body, true);
             $output->writeln(print_r($body, true));
 

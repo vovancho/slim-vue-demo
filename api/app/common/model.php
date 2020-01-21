@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Api\Infrastructure;
+use Api\Infrastructure\Model\Task\Processor;
 use Api\Infrastructure\Model\User as UserInfrastructure;
 use Api\Infrastructure\Model\Task as TaskInfrastructure;
 use Api\Model\User as UserModel;
@@ -27,6 +28,8 @@ return [
 
     ReadModel\User\UserReadRepository::class => \DI\autowire(Infrastructure\ReadModel\User\DoctrineUserReadRepository::class),
     ReadModel\Task\TaskReadRepository::class => \DI\autowire(Infrastructure\ReadModel\Task\DoctrineTaskReadRepository::class),
+
+    Processor\TaskProcessor::class => \DI\autowire(Processor\MockProcessor::class),
 
     'config' => [
         'auth' => [

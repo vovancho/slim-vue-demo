@@ -26,20 +26,12 @@
 </template>
 
 <script>
-import axios from "axios";
 import { mapActions, mapGetters } from "vuex";
 import tasks from "../components/Tasks.vue";
 
 export default {
   components: {
     tasks,
-  },
-  data() {
-    return {
-      name: null,
-      version: null,
-      loading: true
-    };
   },
   computed: {
     ...mapGetters(["isLogged", "userEmail"])
@@ -49,15 +41,6 @@ export default {
     async logoutClicked() {
       await this.logout();
       await this.$router.push({ name: "login" });
-    }
-  },
-  async mounted() {
-    if (this.$store.state.user) {
-      await axios.get("/").then(response => {
-        this.name = response.data.name;
-        this.version = response.data.version;
-        this.loading = false;
-      });
     }
   },
   created() {

@@ -77,10 +77,6 @@ class Task implements AggregateRoot
      * @ORM\Column(type="text", nullable=true)
      */
     private $errorMessage;
-    /**
-     * @var int
-     */
-    private $position;
 
     public function __construct(
         Uuid1 $id,
@@ -97,8 +93,7 @@ class Task implements AggregateRoot
         $this->name = $name;
         $this->status = self::STATUS_WAIT;
         $this->processPercent = 0;
-        $this->position = 0;
-        $this->recordEvent(new TaskCreated($this->getId(), $this->getType(), $this->getUser()));
+        $this->recordEvent(new TaskCreated($this->getType(), $this->getUser(), $this->getId()));
     }
 
     public function execute(): void
@@ -108,7 +103,7 @@ class Task implements AggregateRoot
         }
 
         $this->status = self::STATUS_EXECUTE;
-        $this->recordEvent(new TaskExecuted($this->getId(), $this->getType(), $this->getUser()));
+        $this->recordEvent(new TaskExecuted($this->getType(), $this->getUser()));
     }
 
     public function addPercent(int $percentAdded)
@@ -120,7 +115,7 @@ class Task implements AggregateRoot
         $percent += $percentAdded;
         $this->setProcessPercent($percent);
         if ($this->getProcessPercent() < 100) {
-            $this->recordEvent(new TaskProcessed(clone $this, $this->getType(), $this->getUser()));
+            $this->recordEvent(new TaskProcessed($this->getType(), $this->getUser(), clone $this));
         }
     }
 
@@ -135,7 +130,7 @@ class Task implements AggregateRoot
         }
 
         $this->status = self::STATUS_COMPLETE;
-        $this->recordEvent(new TaskCompleted(clone $this, $this->getType(), $this->getUser()));
+        $this->recordEvent(new TaskCompleted($this->getType(), $this->getUser()));
     }
 
     public function cancel()
@@ -144,7 +139,7 @@ class Task implements AggregateRoot
             throw new \DomainException('Задание не может быть отменено.');
         }
         $this->status = self::STATUS_CANCEL;
-        $this->recordEvent(new TaskCanceled($this->getId(), $this->getType(), $this->getUser()));
+        $this->recordEvent(new TaskCanceled($this->getType(), $this->getUser()));
     }
 
     public function error(\Exception $e)
@@ -158,7 +153,7 @@ class Task implements AggregateRoot
             'trace' => $e->getTraceAsString(),
         ]);
         $this->setErrorMessage($json);
-        $this->recordEvent(new TaskError(clone $this, $this->getType(), $this->getUser()));
+        $this->recordEvent(new TaskError($this->getType(), $this->getUser()));
     }
 
     public function isWait(): bool
@@ -169,11 +164,6 @@ class Task implements AggregateRoot
     public function isExecute()
     {
         return $this->status === self::STATUS_EXECUTE;
-    }
-
-    public function isExecuting(): bool
-    {
-        return !$this->isInterrupted() && ($this->getProcessPercent() < 100 || !$this->isComplete());
     }
 
     public function isComplete(): bool
@@ -226,16 +216,6 @@ class Task implements AggregateRoot
     public function getProcessPercent(): int
     {
         return $this->processPercent;
-    }
-
-    public function setPosition(int $position): void
-    {
-        $this->position = $position;
-    }
-
-    public function getPosition(): int
-    {
-        return $this->position;
     }
 
     public function getType(): string

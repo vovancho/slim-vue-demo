@@ -43,7 +43,14 @@ class Handler
         }
 
         $task->cancel();
+        $this->removePosition($task);
 
         $this->flusher->flush($task);
+    }
+
+    private function removePosition(Task $task): void
+    {
+        $positionEntity = $this->tasks->getPosition($task);
+        $this->tasks->resetPosition($positionEntity);
     }
 }

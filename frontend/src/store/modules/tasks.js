@@ -83,9 +83,12 @@ const actions = {
           break;
         }
         case "Api\\Model\\Task\\Entity\\Task\\Event\\TaskProcessed": {
-          let hasTask = state.items.rows.some(item => item.id === data.task.id);
+          let hasTask = state.items.rows.some(item => item.id === data.task_id);
           if (hasTask) {
-            commit("updateTask", data.task);
+            commit("updateTask", {
+              taskId: data.task_id,
+              processPercent: data.process_percent
+            });
           } else {
             commit("processLoading");
             await dispatch("getTasks");
@@ -103,9 +106,9 @@ const mutations = {
   setTasks(state, items) {
     state.items = items;
   },
-  updateTask(state, task) {
-    let item = state.items.rows.find(item => item.id === task.id);
-    Object.assign(item, task);
+  updateTask(state, { taskId, processPercent }) {
+    let item = state.items.rows.find(item => item.id === taskId);
+    item.process_percent = processPercent;
   },
   processLoading(state) {
     state.processing = true;
