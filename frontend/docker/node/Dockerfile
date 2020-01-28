@@ -17,8 +17,6 @@ RUN apt-get autoremove -y \
 
 # Or just use EXPORT 8080
 EXPOSE ${YOUR_APP_WEB_HTTP_PORT}
-EXPOSE 8000
-# If yout want use vue-cli UI you need to also EXPORT 8000
 
 USER node
 

@@ -1,7 +1,7 @@
 up: docker-up
 down: docker-down
 restart: docker-down docker-up
-init: docker-down-clear api-clear docker-pull docker-build docker-up project-init
+init: docker-down-clear docker-pull docker-build docker-up project-init
 test: api-test
 test-coverage: api-test-coverage
 test-unit: api-test-unit
@@ -24,15 +24,11 @@ docker-build:
 
 project-init: api-composer-install frontend-assets-install api-oauth-keys api-wait-db api-migrations api-fixtures api-ready
 
-api-clear:
-	docker run --rm -v ${PWD}/api:/tmp --workdir=/tmp alpine rm -f .ready
-
 api-composer-install:
 	docker-compose run --rm api-php-cli composer install
 
 frontend-assets-install:
 	docker-compose run --rm frontend-node yarn install
-#	docker-compose run --rm frontend-node yarn build
 
 api-oauth-keys:
 	docker-compose run --rm api-php-cli mkdir -p var/oauth
@@ -53,10 +49,7 @@ api-process-consumer:
 	docker-compose run --rm api-php-cli php bin/app.php tasks:process
 
 api-ready:
-	docker run --rm -v ${PWD}/api:/tmp --workdir=/tmp alpine touch .ready
-
-# frontend-assets-dev:
-# 	docker-compose run --rm frontend-node yarn dev
+	docker-compose exec api-php-cli touch .ready
 
 api-test:
 	docker-compose run --rm api-php-cli vendor/bin/phpunit

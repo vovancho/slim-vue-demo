@@ -18,7 +18,6 @@ class ExecuteTest extends TestCase
 
         self::assertFalse($task->isWait());
         self::assertTrue($task->isExecute());
-        self::assertTrue($task->isExecuting());
         self::assertFalse($task->isComplete());
         self::assertFalse($task->isInterrupted());
         self::assertFalse($task->isCancel());
@@ -27,7 +26,6 @@ class ExecuteTest extends TestCase
         $executedEvents = array_filter($task->releaseEvents(), fn ($class) => get_class($class) === TaskExecuted::class);
         self::assertNotEmpty($executedEvents);
         $executedEvent = array_shift($executedEvents);
-        self::assertEquals($task->getId(), $executedEvent->id);
         self::assertEquals($task->getType(), $executedEvent->type);
         self::assertEquals($task->getUser(), $executedEvent->user);
     }

@@ -61,6 +61,7 @@ class DoctrineTaskReadRepository implements TaskReadRepository
             }
         } else {
             $query->orderBy('pushed_at', 'DESC');
+            $query->addOrderBy('id', 'DESC');
         }
     }
 

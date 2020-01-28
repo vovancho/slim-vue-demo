@@ -7,11 +7,11 @@ services:
       context: ./api/docker
       dockerfile: nginx.docker
     volumes:
-    - ./api:/var/www/api
+      - ./api:/var/www/api
     ports:
-    - "8081:80"
+      - "8081:80"
     depends_on:
-    - api-php-fpm
+      - api-php-fpm
 
   api-php-cli:
     container_name: api-php-cli
@@ -19,12 +19,15 @@ services:
       context: ./api/docker
       dockerfile: php-cli.docker
     environment:
-    - "XDEBUG_CONFIG=remote_enable=1 remote_host=host.docker.internal"
+      - "XDEBUG_CONFIG=remote_enable=1 remote_host=host.docker.internal"
     volumes:
-    - ./api:/var/www/api
-    - composer:/root/.composer/cache
+      - ./api:/var/www/api
+      - composer:/root/.composer/cache
     working_dir: /var/www/api
     tty: true
+    depends_on:
+      - project-db
+      - project-amqp
 
   api-php-fpm:
     container_name: api-php-fpm
@@ -32,66 +35,76 @@ services:
       context: ./api/docker
       dockerfile: php-fpm.docker
     environment:
-    - "XDEBUG_CONFIG=remote_enable=1 remote_host=host.docker.internal"
+      - "XDEBUG_CONFIG=remote_enable=1 remote_host=host.docker.internal"
     volumes:
-    - ./api:/var/www/api
+      - ./api:/var/www/api
     working_dir: /var/www/api
+    depends_on:
+      - api-php-cli
+
+  api-queue-consumer:
+    container_name: api-queue-consumer
+    build:
+      context: ./api/docker
+      dockerfile: php-cli.docker
+    volumes:
+      - ./api:/var/www/api
+    working_dir: /var/www/api
+    depends_on:
+      - api-php-cli
+    command: sh -c "until [ -f .ready ] ; do sleep 1 ; done && php bin/app.php tasks:process"
 
   project-db:
     container_name: project-db
     image: postgres:11.2-alpine
     volumes:
-    - manager-postgres:/var/lib/postgresql/data
+      - manager-postgres:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: api
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: api
     ports:
-    - "54321:5432"
-
-#  frontend-node:
-#    image: node:12.7-alpine
-#    volumes:
-#    - ./frontend:/var/www/frontend
-#    working_dir: /var/www/frontend
+      - "54321:5432"
 
   frontend-node:
     container_name: frontend-node
     build:
       context: ./frontend/docker/node
       args:
-      - YOUR_APP_WEB_HTTP_PORT=8080
+        - YOUR_APP_WEB_HTTP_PORT=8080
     ports:
-    - "8080:8080"
-    - "8000:8000"  # only needed if using vue-cli UI
+      - "8080:8080"
     volumes:
-    - ./frontend:/var/www/frontend
+      - ./frontend:/var/www/frontend
     tty: true
     environment:
-    # https://cli.vuejs.org/guide/mode-and-env.html#modes
-    # development is used by vue-cli-service serve
-    - NODE_ENV=development
-    # one way for hot reloading ... see above for details
-    - CHOKIDAR_USEPOLLING=true
-    - CHOKIDAR_INTERVAL=100
-    - YOUR_APP_WEB_HTTP_PORT=8080
+      # https://cli.vuejs.org/guide/mode-and-env.html#modes
+      # development is used by vue-cli-service serve
+      - NODE_ENV=development
+      # one way for hot reloading ... see above for details
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=100
+      - YOUR_APP_WEB_HTTP_PORT=8080
 
   mailer:
     image: mailhog/mailhog
     restart: unless-stopped
     ports:
-    - "1025:1025"
-    - "8082:8025"
+      - "1025:1025"
+      - "8082:8025"
 
   project-ws:
     container_name: project-ws
-    image: node:10.11-jessie
+    build:
+      context: ./websocket/docker
     volumes:
       - ./websocket:/var/www/websocket
     ports:
       - "8084:8000"
     working_dir: /var/www/websocket
-    tty: true
+    depends_on:
+      - project-amqp
+    command: sh -c "/start.sh && npm start"
 
   project-amqp:
     container_name: project-amqp

@@ -19,7 +19,6 @@ class CancelTest extends TestCase
 
         self::assertFalse($task->isWait());
         self::assertFalse($task->isExecute());
-        self::assertFalse($task->isExecuting());
         self::assertFalse($task->isComplete());
         self::assertTrue($task->isInterrupted());
         self::assertTrue($task->isCancel());
@@ -31,7 +30,6 @@ class CancelTest extends TestCase
         $canceledEvents = array_filter($task->releaseEvents(), fn ($class) => get_class($class) === TaskCanceled::class);
         self::assertNotEmpty($canceledEvents);
         $canceledEvent = array_shift($canceledEvents);
-        self::assertEquals($task->getId(), $canceledEvent->id);
         self::assertEquals($task->getType(), $canceledEvent->type);
         self::assertEquals($task->getUser(), $canceledEvent->user);
     }
@@ -44,7 +42,6 @@ class CancelTest extends TestCase
 
         self::assertFalse($task->isWait());
         self::assertFalse($task->isExecute());
-        self::assertFalse($task->isExecuting());
         self::assertFalse($task->isComplete());
         self::assertTrue($task->isInterrupted());
         self::assertTrue($task->isCancel());
@@ -56,7 +53,6 @@ class CancelTest extends TestCase
         $canceledEvents = array_filter($task->releaseEvents(), fn ($class) => get_class($class) === TaskCanceled::class);
         self::assertNotEmpty($canceledEvents);
         $canceledEvent = array_shift($canceledEvents);
-        self::assertEquals($task->getId(), $canceledEvent->id);
         self::assertEquals($task->getType(), $canceledEvent->type);
         self::assertEquals($task->getUser(), $canceledEvent->user);
     }

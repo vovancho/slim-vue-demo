@@ -25,7 +25,6 @@ class CreateTest extends TestCase
 
         self::assertTrue($task->isWait());
         self::assertFalse($task->isExecute());
-        self::assertTrue($task->isExecuting());
         self::assertFalse($task->isComplete());
         self::assertFalse($task->isInterrupted());
         self::assertFalse($task->isCancel());
@@ -37,7 +36,7 @@ class CreateTest extends TestCase
         self::assertEquals($type, $task->getType());
         self::assertEquals($name, $task->getName());
         self::assertEquals(0, $task->getProcessPercent());
-        self::assertEquals(0, $task->getPosition());
+        self::assertEquals(Task::STATUS_WAIT, $task->getStatus());
         self::assertNull($task->getErrorMessage());
 
         $createdEvents = array_filter($task->releaseEvents(), fn ($class) => get_class($class) === TaskCreated::class);

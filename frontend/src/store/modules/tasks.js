@@ -15,14 +15,18 @@ const getters = {};
 // actions
 const actions = {
   async getTasks({ commit }, options) {
-    let response = await api.getTasks(options);
-    response.data.rows = response.data.rows.map(item => {
-      item.error_message = item.error_message
-        ? JSON.parse(item.error_message)
-        : item.error_message;
-      return item;
-    });
-    commit("setTasks", response.data);
+    try {
+      let response = await api.getTasks(options);
+      response.data.rows = response.data.rows.map(item => {
+        item.error_message = item.error_message
+          ? JSON.parse(item.error_message)
+          : item.error_message;
+        return item;
+      });
+      commit("setTasks", response.data);
+    } catch (e) {
+      commit("resetTasks");
+    }
   },
   async createTask(context, { name, type }) {
     let response = await api.createTask(name, type);
@@ -44,7 +48,6 @@ const actions = {
     const socket = new WebSocket(process.env.VUE_APP_WS_URL);
 
     socket.onopen = function() {
-      console.log("onopen");
       if (rootState.user) {
         socket.send(
           JSON.stringify({
@@ -105,6 +108,12 @@ const actions = {
 const mutations = {
   setTasks(state, items) {
     state.items = items;
+  },
+  resetTasks(state) {
+    state.items = {
+      total: 0,
+      rows: []
+    };
   },
   updateTask(state, { taskId, processPercent }) {
     let item = state.items.rows.find(item => item.id === taskId);

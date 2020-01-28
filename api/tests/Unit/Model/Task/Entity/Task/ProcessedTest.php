@@ -19,7 +19,6 @@ class ProcessedTest extends TestCase
 
         self::assertFalse($task->isWait());
         self::assertTrue($task->isExecute());
-        self::assertTrue($task->isExecuting());
         self::assertFalse($task->isComplete());
         self::assertFalse($task->isInterrupted());
         self::assertFalse($task->isCancel());

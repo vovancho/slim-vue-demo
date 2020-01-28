@@ -2,6 +2,8 @@
 declare(strict_types=1);
 
 use Api\Infrastructure\Framework\ResponseEmitter;
+use Api\Infrastructure\Framework\Handlers\HttpErrorHandler;
+use Api\Infrastructure\Framework\Handlers\ShutdownHandler;
 use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
@@ -33,6 +35,7 @@ if (file_exists(APP_PATH . '.env')) {
 // Instantiate the app
     AppFactory::setContainer($container);
     $app = AppFactory::create();
+    $callableResolver = $app->getCallableResolver();
 
 // Register middleware
     $middleware = require APP_PATH . 'app/middleware.php';
@@ -49,11 +52,20 @@ if (file_exists(APP_PATH . '.env')) {
     $serverRequestCreator = ServerRequestCreatorFactory::create();
     $request = $serverRequestCreator->createServerRequestFromGlobals();
 
+// Create Error Handler
+    $responseFactory = $app->getResponseFactory();
+    $errorHandler = new HttpErrorHandler($callableResolver, $responseFactory);
+
+// Create Shutdown Handler
+    $shutdownHandler = new ShutdownHandler($request, $errorHandler, $displayErrorDetails);
+    register_shutdown_function($shutdownHandler);
+
 // Add Routing Middleware
     $app->addRoutingMiddleware();
 
 // Add Error Middleware
-    $app->addErrorMiddleware($displayErrorDetails, true, true);
+    $errorMiddleware = $app->addErrorMiddleware($displayErrorDetails, false, false);
+    $errorMiddleware->setDefaultErrorHandler($errorHandler);
 
 // Run App & Emit Response
     $response = $app->handle($request);

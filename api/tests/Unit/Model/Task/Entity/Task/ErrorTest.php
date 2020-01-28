@@ -20,7 +20,6 @@ class ErrorTest extends TestCase
 
         self::assertFalse($task->isWait());
         self::assertFalse($task->isExecute());
-        self::assertFalse($task->isExecuting());
         self::assertFalse($task->isComplete());
         self::assertTrue($task->isInterrupted());
         self::assertFalse($task->isCancel());
@@ -36,7 +35,6 @@ class ErrorTest extends TestCase
         $processedEvents = array_filter($task->releaseEvents(), fn ($class) => get_class($class) === TaskError::class);
         self::assertNotEmpty($processedEvents);
         $processedEvent = array_shift($processedEvents);
-        self::assertEquals($task->getId(), $processedEvent->task->getId());
         self::assertEquals($task->getType(), $processedEvent->type);
         self::assertEquals($task->getUser(), $processedEvent->user);
     }
