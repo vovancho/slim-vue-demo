@@ -16,4 +16,4 @@ install:
   - travis_retry composer update --dev --prefer-dist --no-interaction --working-dir=api
 
 script:
-- api/vendor/bin/phpunit
+- api/vendor/bin/phpunit api
