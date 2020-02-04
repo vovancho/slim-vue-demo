@@ -22,7 +22,7 @@ before_script:
   - docker-compose -f docker-compose-test.yml up -d
   - sleep 15
   - docker container ls -a
-  - docker-compose -f docker-compose-test.yml run --rm api-php-cli php bin/app.php migrations:migrate --no-interaction
+  - docker-compose -f docker-compose-test.yml run --rm api-php-cli php bin/app-test.php migrations:migrate --no-interaction
 
 script:
   - docker-compose -f docker-compose-test.yml run --rm api-php-cli vendor/bin/phpunit
