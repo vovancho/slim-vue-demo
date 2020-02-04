@@ -12,7 +12,6 @@ use Api\Model\Task\Entity\Task\TaskRepository;
 use Api\Model\User\Entity\User\User;
 use Api\Model\User\Entity\User\UserId;
 use Api\Model\User\Entity\User\UserRepository;
-use Zend\EventManager\Exception\DomainException;
 
 class Handler
 {
@@ -39,11 +38,13 @@ class Handler
         $task = $this->tasks->get(new Uuid1($command->id));
 
         if ($task->getUser()->getId()->getId() !== $user->getId()->getId()) {
-            throw new DomainException('Задача не принадлежит пользователю.');
+            throw new \DomainException('Задача не принадлежит пользователю.');
         }
 
         $task->cancel();
-        $this->removePosition($task);
+        if ($task->isWait()) {
+            $this->removePosition($task);
+        }
 
         $this->flusher->flush($task);
     }

@@ -13,6 +13,7 @@ use Api\Model\Task\UseCase\Cancel\Handler;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
+use Slim\Routing\RouteContext;
 
 class CancelAction implements RequestHandlerInterface
 {
@@ -40,9 +41,11 @@ class CancelAction implements RequestHandlerInterface
 
     private function deserialize(ServerRequestInterface $request): Command
     {
+        $routeContext = RouteContext::fromRequest($request);
+
         $command = new Command();
         $command->user = $request->getAttribute('oauth_user_id');
-        $command->id = $request->getAttribute('route')->getArgument('id');
+        $command->id = $routeContext->getRoute()->getArgument('id');
 
         return $command;
     }

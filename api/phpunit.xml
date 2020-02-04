@@ -20,8 +20,10 @@
     <php>
         <env name="API_ENV" value="test"/>
         <env name="API_DEBUG" value="1"/>
-        <env name="API_DB_URL" value="pgsql://postgres@localhost:5432/travis_ci_test?charset=utf8"/>
+        <env name="API_DB_URL" value="pgsql://api:secret@project-db:5432/api?charset=utf8"/>
+        <env name="API_MAILER_FROM_EMAIL" value="mail@app.dev"/>
         <env name="API_OAUTH_PUBLIC_KEY_PATH" value="tests/data/public.key"/>
         <env name="API_OAUTH_PRIVATE_KEY_PATH" value="tests/data/private.key"/>
+        <env name="API_OAUTH_ENCRYPTION_KEY" value="test"/>
     </php>
 </phpunit>

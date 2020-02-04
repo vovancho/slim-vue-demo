@@ -1,0 +1,22 @@
+version: '3'
+services:
+
+  api-php-cli:
+    container_name: api-php-cli
+    build:
+      context: ./api/docker
+      dockerfile: php-cli.docker
+    volumes:
+      - ./api:/var/www/api
+    working_dir: /var/www/api
+    tty: true
+    depends_on:
+      - project-db
+
+  project-db:
+    container_name: project-db
+    image: postgres:11.2-alpine
+    environment:
+      POSTGRES_USER: api
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: api

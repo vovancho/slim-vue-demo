@@ -7,7 +7,7 @@ php:
 sudo: false
 
 services:
-  - postgresql
+  - docker
 
 # cache vendor dirs
 cache:
@@ -19,8 +19,10 @@ install:
   - travis_retry composer update --dev --prefer-dist --no-interaction --working-dir=api
 
 before_script:
-  - psql -c 'create database travis_ci_test;' -U postgres
-  - php api/bin/app.php migrations:migrate --no-interaction
+  - docker-compose -f docker-compose-test.yml up -d
+  - sleep 15
+  - docker container ls -a
+  - docker-compose -f docker-compose-test.yml run --rm api-php-cli php bin/app.php migrations:migrate --no-interaction
 
 script:
-- api/vendor/bin/phpunit -c api/phpunit.xml
+  - docker-compose -f docker-compose-test.yml run --rm api-php-cli vendor/bin/phpunit

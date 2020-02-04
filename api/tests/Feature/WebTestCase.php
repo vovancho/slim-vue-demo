@@ -103,6 +103,7 @@ class WebTestCase extends TestCase
         // Register middleware
         $middleware = require APP_PATH . 'app/middleware.php';
         $middleware($app);
+        $app->addRoutingMiddleware();
 
         // Register routes
         $routes = require APP_PATH . 'app/routes.php';
