@@ -20,3 +20,4 @@ services:
       POSTGRES_USER: api
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: api
+
