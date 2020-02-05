@@ -1,4 +1,4 @@
-# Приложение Обработчик задач
+# Приложение Обработчик задач [![Build Status](https://travis-ci.com/vovancho/slim-vue-demo.svg?token=73g6SyN3hhjhz6WZX1ws&branch=master)](https://travis-ci.com/vovancho/slim-vue-demo)
 Демонстрационное приложение
 
 ## Стек
