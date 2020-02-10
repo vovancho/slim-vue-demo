@@ -13,7 +13,6 @@ return [
         $clientRepository = $container->get(Server\Repositories\ClientRepositoryInterface::class);
         $scopeRepository = $container->get(Server\Repositories\ScopeRepositoryInterface::class);
         $accessTokenRepository = $container->get(Server\Repositories\AccessTokenRepositoryInterface::class);
-        $authCodeRepository = $container->get(Server\Repositories\AuthCodeRepositoryInterface::class);
         $refreshTokenRepository = $container->get(Server\Repositories\RefreshTokenRepositoryInterface::class);
         $userRepository = $container->get(Server\Repositories\UserRepositoryInterface::class);
 
@@ -24,13 +23,6 @@ return [
             new Server\CryptKey($config['private_key_path'], null, false),
             $config['encryption_key']
         );
-
-        $grant = new Server\Grant\AuthCodeGrant($authCodeRepository, $refreshTokenRepository, new \DateInterval('PT10M'));
-        $server->enableGrantType($grant, new \DateInterval('PT1H'));
-
-        $server->enableGrantType(new Server\Grant\ClientCredentialsGrant(), new \DateInterval('PT1H'));
-
-        $server->enableGrantType(new Server\Grant\ImplicitGrant(new \DateInterval('PT1H')));
 
         $grant = new Server\Grant\PasswordGrant($userRepository, $refreshTokenRepository);
         $grant->setRefreshTokenTTL(new \DateInterval('P1M'));
@@ -58,7 +50,6 @@ return [
     },
     Api\Infrastructure\Framework\Middleware\ResourceServerMiddleware::class => \DI\autowire(Api\Infrastructure\Framework\Middleware\ResourceServerMiddleware::class),
     Server\Repositories\ScopeRepositoryInterface::class => \DI\autowire(Infrastructure\Entity\ScopeRepository::class),
-    Server\Repositories\AuthCodeRepositoryInterface::class => \DI\autowire(Infrastructure\Entity\AuthCodeRepository::class),
     Server\Repositories\AccessTokenRepositoryInterface::class => \DI\autowire(Infrastructure\Entity\AccessTokenRepository::class),
     Server\Repositories\RefreshTokenRepositoryInterface::class => \DI\autowire(Infrastructure\Entity\RefreshTokenRepository::class),
     Server\Repositories\UserRepositoryInterface::class => \DI\autowire(Infrastructure\Entity\UserRepository::class),

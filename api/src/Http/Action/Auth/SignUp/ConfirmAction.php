@@ -12,7 +12,20 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Api\Http\JsonResponse;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Post(
+ *     path="/auth/signup/confirm",
+ *     summary="Подтвердить зарегистрированного пользователя",
+ *     tags={"Авторизация"},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(ref="#/components/schemas/UserCreateConfirm")
+ *     ),
+ *     @OA\Response(response=200, description="E-Mail пользователя подтвержден")
+ * )
+ */
 class ConfirmAction implements RequestHandlerInterface
 {
     private $handler;
@@ -49,3 +62,13 @@ class ConfirmAction implements RequestHandlerInterface
         return $command;
     }
 }
+
+/**
+ * @OA\Schema(
+ *      schema="UserCreateConfirm",
+ *      required={"email", "token"},
+ *      @OA\Property(property="email", type="string"),
+ *      @OA\Property(property="token", type="string", minLength=6, maxLength=6),
+ *      example={"email":"new-user@mail.ru", "token":"123456"}
+ * )
+ */

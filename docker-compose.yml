@@ -6,6 +6,8 @@ services:
     build:
       context: ./api/docker
       dockerfile: nginx.docker
+      args:
+        SWAGGER_URL: ${SWAGGER_URL}
     volumes:
       - ./api:/var/www/api
     ports:
@@ -119,6 +121,16 @@ services:
       - "5672:5672"
     volumes:
       - rabbitmq:/var/lib/rabbitmq
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: swagger-ui
+    environment:
+      URL: ${SWAGGER_CONFIG_URL}
+    ports:
+      - "8086:8080"
+    depends_on:
+      - api-nginx
 
 volumes:
   composer:

@@ -2,6 +2,8 @@ up: docker-up
 down: docker-down
 restart: docker-down docker-up
 init: docker-down-clear docker-pull docker-build docker-up project-init
+init-windows: init-env-windows init
+init-linux: init-env-linux init
 test: api-test
 test-coverage: api-test-coverage
 test-unit: api-test-unit
@@ -22,7 +24,7 @@ docker-pull:
 docker-build:
 	docker-compose build
 
-project-init: api-composer-install frontend-assets-install api-oauth-keys api-wait-db api-migrations api-fixtures api-ready
+project-init: api-composer-install frontend-assets-install api-oauth-keys openapi-config-generate api-wait-db api-migrations api-fixtures api-ready
 
 api-composer-install:
 	docker-compose run --rm api-php-cli composer install
@@ -68,3 +70,18 @@ ws-start:
 
 api-clear-cache:
 	docker-compose run --rm api-php-cli php bin/app.php orm:clear-cache:metadata
+
+openapi-config-generate:
+	docker-compose run --rm api-php-cli vendor/bin/openapi ./src/Http/Action --output ./public/openapi.yml
+
+init-env-windows:
+	echo n | copy /-y ".env.example" ".env"
+	echo n | copy /-y "api/.env.example" "api/.env"
+	echo n | copy /-y "frontend/.env.example" "frontend/.env"
+	echo n | copy /-y "websocket/.env.example" "websocket/.env"
+
+init-env-linux:
+	cp -n .env.example .env
+	cp -n api/.env.example api/.env
+	cp -n frontend/.env.example frontend/.env
+	cp -n websocket/.env.example websocket/.env

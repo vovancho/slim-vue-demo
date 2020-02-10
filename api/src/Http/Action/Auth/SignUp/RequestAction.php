@@ -12,7 +12,24 @@ use Api\Model\User\UseCase\SignUp\Request\Handler;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Post(
+ *     path="/auth/signup",
+ *     summary="Зарегистрировать пользователя",
+ *     tags={"Авторизация"},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(ref="#/components/schemas/UserCreate")
+ *     ),
+ *     @OA\Response(response=201, description="E-Mail нового пользователя",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="email", type="string", example="new-user@mail.ru")
+ *         )
+ *     )
+ * )
+ */
 class RequestAction implements RequestHandlerInterface
 {
     private $handler;
@@ -51,3 +68,13 @@ class RequestAction implements RequestHandlerInterface
         return $command;
     }
 }
+
+/**
+ * @OA\Schema(
+ *      schema="UserCreate",
+ *      required={"email", "password"},
+ *      @OA\Property(property="email", type="string"),
+ *      @OA\Property(property="password", type="string", minLength=6),
+ *      example={"email":"new-user@mail.ru", "password":"secret"}
+ * )
+ */
