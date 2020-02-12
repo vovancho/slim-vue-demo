@@ -10,7 +10,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
-use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Psr7\Response;
 use OpenApi\Annotations as OA;
 
@@ -28,7 +27,9 @@ use OpenApi\Annotations as OA;
  *     ),
  *     @OA\Response(response=200, description="Данные авторизации",
  *         @OA\JsonContent(ref="#/components/schemas/OAuthResponse"),
- *     )
+ *     ),
+ *     @OA\Response(response=405, ref="#/components/responses/405"),
+ *     @OA\Response(response=400, ref="#/components/responses/AuthInvalidError")
  * )
  */
 class OAuthAction implements RequestHandlerInterface
@@ -48,15 +49,24 @@ class OAuthAction implements RequestHandlerInterface
             return $this->server->respondToAccessTokenRequest($request, new Response());
         } catch (OAuthServerException $exception) {
             $this->logger->warning($exception->getMessage(), ['exception' => $exception]);
-            return $exception->generateHttpResponse(new Response());
-        } catch (\Exception $exception) {
-            return (new OAuthServerException($exception->getMessage(), 0, 'unknown_error', 500))
-                ->generateHttpResponse(new Response());
+            throw $exception;
         }
     }
 }
 
 /**
+ * @OA\Response(
+ *     response="AuthInvalidError",
+ *     description="Ошибка авторизации",
+ *     @OA\JsonContent(
+ *          @OA\Schema(ref="#/components/schemas/ErrorModel"),
+ *          example={
+ *                      "statusCode": "BAD_REQUEST",
+ *                      "description": "Неверный E-Mail или Пароль."
+ *                  }
+ *     )
+ * )
+ *
  * @OA\Schema(
  *      schema="OAuthPassword",
  *      required={"grant_type", "username", "password", "client_id", "client_secret", "access_type"},

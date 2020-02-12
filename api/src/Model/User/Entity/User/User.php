@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Api\Model\User\Entity\User;
 
+use Api\Http\DomainException;
 use Api\Model\AggregateRoot;
 use Api\Model\EventTrait;
 use Api\Model\User\Entity\User\Event\UserConfirmed;
@@ -71,7 +72,7 @@ class User implements AggregateRoot
     public function confirmSignup(string $token, \DateTimeImmutable $date): void
     {
         if ($this->isActive()) {
-            throw new \DomainException('Пользователь подтвержден.');
+            throw new DomainException('Пользователь подтвержден.');
         }
         $this->confirmToken->validate($token, $date);
         $this->status = self::STATUS_ACTIVE;

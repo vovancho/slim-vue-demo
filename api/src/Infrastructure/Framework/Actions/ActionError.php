@@ -30,8 +30,13 @@ class ActionError implements JsonSerializable
     private $description;
 
     /**
-     * @param string        $type
-     * @param string|null   $description
+     * @var array
+     */
+    private $formErrors;
+
+    /**
+     * @param string $type
+     * @param string|null $description
      */
     public function __construct(string $type, ?string $description)
     {
@@ -78,12 +83,35 @@ class ActionError implements JsonSerializable
     /**
      * @return array
      */
+    public function getFormErrors(): array
+    {
+        return $this->formErrors;
+    }
+
+    /**
+     * @param array $formErrors
+     * @return self
+     */
+    public function setFormErrors(?array $formErrors = null): self
+    {
+        $this->formErrors = $formErrors;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
     public function jsonSerialize()
     {
-        $payload = [
-            'type' => $this->type,
-            'description' => $this->description,
-        ];
+        $payload['type'] = $this->type;
+
+        if ($this->description) {
+            $payload['description'] = $this->description;
+        }
+
+        if ($this->formErrors) {
+            $payload['formErrors'] = $this->formErrors;
+        }
 
         return $payload;
     }

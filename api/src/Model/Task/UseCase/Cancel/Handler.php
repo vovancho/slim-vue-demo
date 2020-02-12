@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Api\Model\Task\UseCase\Cancel;
 
 
+use Api\Http\DomainException;
 use Api\Model\Base\Uuid1;
 use Api\Model\Flusher;
 use Api\Model\Task\Entity\Task\Task;
@@ -38,7 +39,7 @@ class Handler
         $task = $this->tasks->get(new Uuid1($command->id));
 
         if ($task->getUser()->getId()->getId() !== $user->getId()->getId()) {
-            throw new \DomainException('Задача не принадлежит пользователю.');
+            throw new DomainException('Задача не принадлежит пользователю.');
         }
 
         $task->cancel();

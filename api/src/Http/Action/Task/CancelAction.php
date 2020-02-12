@@ -28,8 +28,10 @@ use OpenApi\Annotations as OA;
  *         example="3b525ad0-489f-11ea-a264-0242ac140008",
  *         @OA\Schema(type="string")
  *     ),
+ *     @OA\Response(response=204, description="Задача отменена"),
  *     @OA\Response(response=401, ref="#/components/responses/401"),
- *     @OA\Response(response=204, description="Задача отменена")
+ *     @OA\Response(response=400, ref="#/components/responses/ValidationError"),
+ *     @OA\Response(response=405, ref="#/components/responses/405")
  * )
  */
 class CancelAction implements RequestHandlerInterface

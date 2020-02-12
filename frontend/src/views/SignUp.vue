@@ -203,13 +203,17 @@ export default {
           this.loading = false;
         } catch (error) {
           if (error.response) {
-            if (error.response.data.error) {
-              this.error = error.response.data.error || error.response.data.message;
-            } else if (error.response.data.errors) {
-              this.confirmForm = this.assignErrors(
-                this.confirmForm,
-                error.response.data.errors
-              );
+            let errorObj = error.response.data.error;
+            if (errorObj) {
+              if (errorObj.description) {
+                this.error = errorObj.description;
+              }
+              if (errorObj.formErrors) {
+                this.confirmForm = this.assignErrors(
+                  this.confirmForm,
+                  errorObj.formErrors
+                );
+              }
             }
           } else {
             console.log(error.message);
@@ -233,13 +237,17 @@ export default {
           this.loading = false;
         } catch (error) {
           if (error.response) {
-            if (error.response.data.error) {
-              this.error = error.response.data.error || error.response.data.message;
-            } else if (error.response.data.errors) {
-              this.signUpForm = this.assignErrors(
-                this.signUpForm,
-                error.response.data.errors
-              );
+            let errorObj = error.response.data.error;
+            if (errorObj) {
+              if (errorObj.description) {
+                this.error = errorObj.description;
+              }
+              if (errorObj.formErrors) {
+                this.signUpForm = this.assignErrors(
+                  this.signUpForm,
+                  errorObj.formErrors
+                );
+              }
             }
           } else {
             console.log(error.message);

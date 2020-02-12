@@ -19,7 +19,6 @@ class AuthTest extends WebTestCase
 
     public function testMethod(): void
     {
-        $this->expectExceptionMessage('Method not allowed. Must be one of: POST');
         $response = $this->get('/oauth/auth');
         self::assertEquals(405, $response->getStatusCode());
     }

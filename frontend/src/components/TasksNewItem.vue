@@ -152,14 +152,17 @@ export default {
           this.show = false;
         } catch (error) {
           if (error.response) {
-            if (error.response.data.error) {
-              this.error =
-                error.response.data.error || error.response.data.message;
-            } else if (error.response.data.errors) {
-              this.form = this.assignErrors(
-                this.form,
-                error.response.data.errors
-              );
+            let errorObj = error.response.data.error;
+            if (errorObj) {
+              if (errorObj.description) {
+                this.error = errorObj.description;
+              }
+              if (errorObj.formErrors) {
+                this.form = this.assignErrors(
+                  this.form,
+                  errorObj.formErrors
+                );
+              }
             }
           } else {
             console.log(error.message);

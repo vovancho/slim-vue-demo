@@ -19,7 +19,6 @@ class ConfirmTest extends WebTestCase
 
     public function testMethod(): void
     {
-        $this->expectExceptionMessage('Method not allowed. Must be one of: POST');
         $response = $this->get('/auth/signup');
         self::assertEquals(405, $response->getStatusCode());
     }
@@ -52,10 +51,13 @@ class ConfirmTest extends WebTestCase
         $data = json_decode($content, true);
 
         self::assertEquals([
-            'errors' => [
-                'email' => 'Значение адреса электронной почты недопустимо.',
-                'token' => 'Значение не должно быть пустым.',
-
+            'statusCode' => 400,
+            'error' => [
+                'type' => 'VALIDATION_ERROR',
+                'formErrors' => [
+                    'email' => 'Значение адреса электронной почты недопустимо.',
+                    'token' => 'Значение не должно быть пустым.',
+                ],
             ],
         ], $data);
     }
@@ -73,7 +75,11 @@ class ConfirmTest extends WebTestCase
         $data = json_decode($content, true);
 
         self::assertEquals([
-            'error' => 'Пользователь не найден.',
+            'statusCode' => 400,
+            'error' => [
+                'type' => 'BAD_REQUEST',
+                'description' => 'Пользователь не найден.',
+            ],
         ], $data);
     }
 
@@ -90,7 +96,11 @@ class ConfirmTest extends WebTestCase
         $data = json_decode($content, true);
 
         self::assertEquals([
-            'error' => 'Неверный код подтверждения.',
+            'statusCode' => 400,
+            'error' => [
+                'type' => 'BAD_REQUEST',
+                'description' => 'Неверный код подтверждения.',
+            ],
         ], $data);
     }
 
@@ -107,7 +117,11 @@ class ConfirmTest extends WebTestCase
         $data = json_decode($content, true);
 
         self::assertEquals([
-            'error' => 'Код подтверждения истек.',
+            'statusCode' => 400,
+            'error' => [
+                'type' => 'BAD_REQUEST',
+                'description' => 'Код подтверждения истек.',
+            ],
         ], $data);
     }
 }

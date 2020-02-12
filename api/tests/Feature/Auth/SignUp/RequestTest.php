@@ -19,7 +19,6 @@ class RequestTest extends WebTestCase
 
     public function testMethod(): void
     {
-        $this->expectExceptionMessage('Method not allowed. Must be one of: POST');
         $response = $this->get('/auth/signup');
         self::assertEquals(405, $response->getStatusCode());
     }
@@ -54,9 +53,13 @@ class RequestTest extends WebTestCase
         $data = json_decode($content, true);
 
         self::assertEquals([
-            'errors' => [
-                'email' => 'Значение адреса электронной почты недопустимо.',
-                'password' => 'Значение слишком короткое. Должно быть равно 6 символам или больше.',
+            'statusCode' => 400,
+            'error' => [
+                'type' => 'VALIDATION_ERROR',
+                'formErrors' => [
+                    'email' => 'Значение адреса электронной почты недопустимо.',
+                    'password' => 'Значение слишком короткое. Должно быть равно 6 символам или больше.',
+                ],
             ],
         ], $data);
     }
@@ -74,7 +77,11 @@ class RequestTest extends WebTestCase
         $data = json_decode($content, true);
 
         self::assertEquals([
-            'error' => 'Пользователь с таким E-mail уже есть.',
+            'statusCode' => 400,
+            'error' => [
+                'type' => 'BAD_REQUEST',
+                'description' => 'Пользователь с таким E-mail уже есть.',
+            ],
         ], $data);
     }
 }

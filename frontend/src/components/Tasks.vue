@@ -229,10 +229,13 @@ export default {
           this.grid.loading = false;
         } catch (error) {
           if (error.response) {
-            this.$dialog.error({
-              text: error.response.data.error || error.response.data.message,
-              title: "Ошибка"
-            });
+            let errorObj = error.response.data.error;
+            if (errorObj && errorObj.description) {
+              this.$dialog.error({
+                text: errorObj.description,
+                title: "Ошибка"
+              });
+            }
           } else {
             console.log(error.message);
           }

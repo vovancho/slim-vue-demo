@@ -35,17 +35,7 @@ class ResourceServerMiddleware
 
     public function __invoke(Request $request, RequestHandler $handler): Response
     {
-        try {
-            $request = $this->server->validateAuthenticatedRequest($request);
-        } catch (OAuthServerException $exception) {
-            return $exception->generateHttpResponse(new SlimResponse());
-            // @codeCoverageIgnoreStart
-        } catch (Exception $exception) {
-            return (new OAuthServerException($exception->getMessage(), 0, 'unknown_error', 500))
-                ->generateHttpResponse(new SlimResponse());
-            // @codeCoverageIgnoreEnd
-        }
-
+        $request = $this->server->validateAuthenticatedRequest($request);
         return $handler->handle($request);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Api\Model\User\Entity\User;
 
+use Api\Http\DomainException;
 use Doctrine\ORM\Mapping as ORM;
 use Webmozart\Assert\Assert;
 
@@ -31,10 +32,10 @@ class ConfirmToken
     public function validate(string $token, \DateTimeImmutable $date): void
     {
         if (!$this->isEqualTo($token)) {
-            throw new \DomainException('Неверный код подтверждения.');
+            throw new DomainException('Неверный код подтверждения.');
         }
         if ($this->isExpiredTo($date)) {
-            throw new \DomainException('Код подтверждения истек.');
+            throw new DomainException('Код подтверждения истек.');
         }
     }
 

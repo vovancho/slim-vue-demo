@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Api\Model\User\UseCase\SignUp\Request;
 
+use Api\Http\DomainException;
 use Api\Model\Flusher;
 use Api\Model\User\Entity\User\Email;
 use Api\Model\User\Entity\User\User;
@@ -37,7 +38,7 @@ class Handler
         $email = new Email($command->email);
 
         if ($this->users->hasByEmail($email)) {
-            throw new \DomainException('Пользователь с таким E-mail уже есть.');
+            throw new DomainException('Пользователь с таким E-mail уже есть.');
         }
 
         $user = new User(

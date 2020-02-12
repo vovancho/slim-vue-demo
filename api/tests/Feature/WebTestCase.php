@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Api\Test\Feature;
 
+use Api\Infrastructure\Framework\Handlers\HttpErrorHandler;
 use DI\ContainerBuilder;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Loader;
@@ -103,7 +104,16 @@ class WebTestCase extends TestCase
         // Register middleware
         $middleware = require APP_PATH . 'app/middleware.php';
         $middleware($app);
+
+        $responseFactory = $app->getResponseFactory();
+        $callableResolver = $app->getCallableResolver();
+        $errorHandler = new HttpErrorHandler($callableResolver, $responseFactory);
+
         $app->addRoutingMiddleware();
+
+        // Add Error Middleware
+        $errorMiddleware = $app->addErrorMiddleware(false, false, false);
+        $errorMiddleware->setDefaultErrorHandler($errorHandler);
 
         // Register routes
         $routes = require APP_PATH . 'app/routes.php';

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Api\Http;
 
 use Api\Http\Validator\Errors;
+use Fig\Http\Message\StatusCodeInterface;
 
 class ValidationException extends \LogicException
 {
@@ -12,7 +13,7 @@ class ValidationException extends \LogicException
 
     public function __construct(Errors $errors)
     {
-        parent::__construct('Validation errors.');
+        parent::__construct('', StatusCodeInterface::STATUS_BAD_REQUEST);
         $this->errors = $errors;
     }
 

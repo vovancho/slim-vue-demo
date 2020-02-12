@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Api\Model\Task\Entity\Task;
 
 
+use Api\Http\DomainException;
 use Api\Model\AggregateRoot;
 use Api\Model\Base\Uuid1;
 use Api\Model\EventTrait;
@@ -99,7 +100,7 @@ class Task implements AggregateRoot
     public function execute(): void
     {
         if (!$this->isWait()) {
-            throw new \DomainException('Выполнение задачи возможно только в статусе ожидания.');
+            throw new DomainException('Выполнение задачи возможно только в статусе ожидания.');
         }
 
         $this->status = self::STATUS_EXECUTE;
@@ -109,7 +110,7 @@ class Task implements AggregateRoot
     public function addPercent(int $percentAdded)
     {
         if (!$this->isExecute()) {
-            throw new \DomainException('Изменение хода выполнения возможно только при выполнении задачи.');
+            throw new DomainException('Изменение хода выполнения возможно только при выполнении задачи.');
         }
         $percent = $this->getProcessPercent();
         $percent += $percentAdded;
@@ -122,11 +123,11 @@ class Task implements AggregateRoot
     public function complete()
     {
         if (!$this->isExecute()) {
-            throw new \DomainException('Задание может быть выполнено только в статусе выполнения.');
+            throw new DomainException('Задание может быть выполнено только в статусе выполнения.');
         }
 
         if ($this->getProcessPercent() < 100) {
-            throw new \DomainException('Задание не может быть выполнено с процентом выполнения меньше 100.');
+            throw new DomainException('Задание не может быть выполнено с процентом выполнения меньше 100.');
         }
 
         $this->status = self::STATUS_COMPLETE;
@@ -136,7 +137,7 @@ class Task implements AggregateRoot
     public function cancel()
     {
         if ($this->isComplete() || $this->isInterrupted()) {
-            throw new \DomainException('Задание не может быть отменено.');
+            throw new DomainException('Задание не может быть отменено.');
         }
         $this->status = self::STATUS_CANCEL;
         $this->recordEvent(new TaskCanceled($this->getType(), $this->getUser()));
@@ -145,7 +146,7 @@ class Task implements AggregateRoot
     public function error(\Exception $e)
     {
         if (!$this->isExecute()) {
-            throw new \DomainException('Ошибка выполнения возможна только при выполнении задачи.');
+            throw new DomainException('Ошибка выполнения возможна только при выполнении задачи.');
         }
         $this->status = self::STATUS_ERROR;
         $json = json_encode([

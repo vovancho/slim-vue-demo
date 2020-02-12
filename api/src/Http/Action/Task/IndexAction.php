@@ -46,13 +46,14 @@ use OpenApi\Annotations as OA;
  *         description="Направление сортировки для поля в параметре sortBy",
  *         @OA\Schema(type="boolean")
  *     ),
- *     @OA\Response(response=401, ref="#/components/responses/401"),
  *     @OA\Response(response=201, description="Набор задач",
  *         @OA\JsonContent(
  *             @OA\Property(property="total", type="integer", description="Количество задач всего", example="1"),
  *             @OA\Property(property="rows", type="array", description="Массив объектов задач", @OA\Items(ref="#/components/schemas/Task"))
  *         ),
- *     )
+ *     ),
+ *     @OA\Response(response=401, ref="#/components/responses/401"),
+ *     @OA\Response(response=405, ref="#/components/responses/405")
  * )
  */
 class IndexAction implements RequestHandlerInterface

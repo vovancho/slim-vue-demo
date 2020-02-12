@@ -21,9 +21,8 @@ class SuccessTest extends WebTestCase
 
     public function testGuest(): void
     {
-        $this->expectExceptionMessage('Method not allowed. Must be one of: POST');
         $response = $this->get('/tasks/create');
-        self::assertEquals(401, $response->getStatusCode());
+        self::assertEquals(405, $response->getStatusCode());
     }
 
     /**

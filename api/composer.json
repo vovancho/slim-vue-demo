@@ -21,11 +21,13 @@
         "symfony/dotenv": "^5.0",
         "symfony/translation": "^5.0",
         "symfony/validator": "^5.0",
+        "webmozart/assert": "^1.6",
         "zendframework/zend-config-aggregator": "^1.2",
         "zircote/swagger-php": "^3.0"
     },
     "require-dev": {
-        "doctrine/data-fixtures": "^1.4"
+        "doctrine/data-fixtures": "^1.4",
+        "phpunit/phpunit": "^7.5"
     },
     "config": {
         "process-timeout": 0,

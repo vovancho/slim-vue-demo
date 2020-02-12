@@ -27,7 +27,9 @@ use OpenApi\Annotations as OA;
  *         @OA\JsonContent(
  *             @OA\Property(property="email", type="string", example="new-user@mail.ru")
  *         )
- *     )
+ *     ),
+ *     @OA\Response(response=400, ref="#/components/responses/ValidationError"),
+ *     @OA\Response(response=405, ref="#/components/responses/405")
  * )
  */
 class RequestAction implements RequestHandlerInterface

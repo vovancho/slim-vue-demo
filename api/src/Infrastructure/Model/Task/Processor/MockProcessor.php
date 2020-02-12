@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Api\Infrastructure\Model\Task\Processor;
 
 
+use Api\Http\DomainException;
 use Generator;
 
 class MockProcessor extends TaskProcessor
@@ -31,7 +32,7 @@ class MockProcessor extends TaskProcessor
     private function tryError($percent): void
     {
         if ($this->errorCase && $percent > 50) {
-            throw new \DomainException("Ошибка на $percent процентах");
+            throw new DomainException("Ошибка на $percent процентах");
         }
     }
 }

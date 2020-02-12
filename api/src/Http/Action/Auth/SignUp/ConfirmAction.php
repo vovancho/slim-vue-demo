@@ -23,7 +23,9 @@ use OpenApi\Annotations as OA;
  *         required=true,
  *         @OA\JsonContent(ref="#/components/schemas/UserCreateConfirm")
  *     ),
- *     @OA\Response(response=200, description="E-Mail пользователя подтвержден")
+ *     @OA\Response(response=200, description="E-Mail пользователя подтвержден"),
+ *     @OA\Response(response=400, ref="#/components/responses/ValidationError"),
+ *     @OA\Response(response=405, ref="#/components/responses/405")
  * )
  */
 class ConfirmAction implements RequestHandlerInterface
