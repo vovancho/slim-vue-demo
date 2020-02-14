@@ -35,7 +35,7 @@ class SuccessTest extends WebTestCase
         $task = $this->getTask();
         $taskId = $task->getTask()->getId()->getId();
 
-        $response = $this->post("/tasks/$taskId/cancel", [], $auth->getHeaders());
+        $response = $this->delete("/tasks/$taskId/cancel", [], $auth->getHeaders());
 
         self::assertEquals(204, $response->getStatusCode());
     }

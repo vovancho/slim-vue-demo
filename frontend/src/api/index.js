@@ -35,7 +35,7 @@ const tasks = {
     return axios.post("/tasks/create", { name, type });
   },
   cancelTask(id) {
-    return axios.post(`/tasks/${id}/cancel`);
+    return axios.delete(`/tasks/${id}/cancel`);
   }
 };
 

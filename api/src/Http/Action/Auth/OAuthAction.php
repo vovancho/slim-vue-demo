@@ -61,8 +61,11 @@ class OAuthAction implements RequestHandlerInterface
  *     @OA\JsonContent(
  *          @OA\Schema(ref="#/components/schemas/ErrorModel"),
  *          example={
- *                      "statusCode": "BAD_REQUEST",
- *                      "description": "Неверный E-Mail или Пароль."
+ *                      "statusCode": "400",
+ *                      "error": {
+ *                          "type": "BAD_REQUEST",
+ *                          "description": "Неверный E-Mail или Пароль."
+ *                      }
  *                  }
  *     )
  * )

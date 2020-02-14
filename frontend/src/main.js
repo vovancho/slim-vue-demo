@@ -18,30 +18,27 @@ if (user) {
     "Bearer " + user.access_token;
 }
 
-axios.interceptors.response.use(null, error => {
+axios.interceptors.response.use(null, async error => {
   if (!error.response || error.response.status !== 401) {
-    return Promise.reject(error);
+    return error;
   }
   const request = error.config;
   if (request.data) {
     let data = JSON.parse(request.data);
     if (data && data.grant_type) {
-      return Promise.reject(error);
+      return error;
     }
   }
-  return store
-    .dispatch("refresh")
-    .then(() => {
-      return new Promise(resolve => {
-        request.headers["Authorization"] =
-          "Bearer " + store.state.user.access_token;
-        resolve(axios(request));
-      });
-    })
-    .catch(() => {
-      router.push({ name: "login" });
-      return Promise.reject(error);
-    });
+
+  try {
+    await store.dispatch("refresh")
+  } catch (e) {
+    await router.push({ name: "login" });
+    return error;
+  }
+
+  request.headers["Authorization"] = "Bearer " + store.state.user.access_token;
+  return axios(request);
 });
 
 Vue.use(VuetifyDialog, {

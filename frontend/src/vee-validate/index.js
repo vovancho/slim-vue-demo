@@ -6,25 +6,11 @@ import { ValidationProvider, ValidationObserver } from "vee-validate";
 
 localize("ru", ru);
 
-extend("required", {
-  ...required
-});
-
-extend("email", {
-  ...email
-});
-
-extend("min", {
-  ...min
-});
-
-extend("max", {
-  ...max
-});
-
-extend("oneOf", {
-  ...oneOf
-});
+extend("required", { ...required });
+extend("email", { ...email });
+extend("min", { ...min });
+extend("max", { ...max });
+extend("oneOf", { ...oneOf });
 
 Vue.component("ValidationProvider", ValidationProvider);
 Vue.component("ValidationObserver", ValidationObserver);

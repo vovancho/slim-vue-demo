@@ -20,6 +20,6 @@ return function (App $app) {
     $app->group('/tasks', function (RouteCollectorProxy $group) {
         $group->get('', Action\Task\IndexAction::class . ':handle');
         $group->post('/create', Action\Task\CreateAction::class . ':handle');
-        $group->post('/{id}/cancel', Action\Task\CancelAction::class . ':handle');
+        $group->delete('/{id}/cancel', Action\Task\CancelAction::class . ':handle');
     })->add($auth);
 };

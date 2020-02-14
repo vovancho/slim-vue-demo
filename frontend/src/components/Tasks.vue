@@ -43,8 +43,7 @@
               <v-avatar v-else class="mr-1">
                 <v-icon>{{ statusIcon(item.status) }}</v-icon>
               </v-avatar>
-              {{ statusText(item.status)
-              }}{{ statusQueuePosition(item.status, item.position) }}
+              {{ statusText(item.status) }}{{ statusQueuePosition(item.status, item.position) }}
             </v-chip>
           </template>
 

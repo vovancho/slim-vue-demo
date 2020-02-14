@@ -9,17 +9,31 @@ use Api\Http\ValidationException;
 use Api\Infrastructure\Framework\Actions\ActionError;
 use Api\Infrastructure\Framework\Actions\ActionPayload;
 use Api\Model\EntityNotFoundException;
-use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 use Slim\Exception;
 use Slim\Handlers\ErrorHandler as SlimErrorHandler;
+use Slim\Interfaces\CallableResolverInterface;
 use Throwable;
 
 class HttpErrorHandler extends SlimErrorHandler
 {
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(CallableResolverInterface $callableResolver, ResponseFactoryInterface $responseFactory, LoggerInterface $logger)
+    {
+        parent::__construct($callableResolver, $responseFactory);
+        $this->logger = $logger;
+    }
+
+    /**
      * @inheritdoc
      */
-    protected function respond(): Response
+    protected function respond(): ResponseInterface
     {
         $exception = $this->exception;
         $error = new ActionError(
@@ -41,6 +55,11 @@ class HttpErrorHandler extends SlimErrorHandler
         $response->getBody()->write($encodedPayload);
 
         return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    protected function logError(string $error): void
+    {
+        $this->logger->error($error);
     }
 
     protected function httpExceptionConfig(ActionError $action, Exception\HttpException $exception): void

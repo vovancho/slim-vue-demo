@@ -23,6 +23,8 @@
                 </v-alert>
 
                 <v-form>
+                  <v-text-field label="hidden" style="display:none" /> <!-- Disable Password Manager of Google Chrome -->
+
                   <ValidationObserver ref="login">
                     <ValidationProvider
                       :name="form.email.label"
@@ -38,6 +40,9 @@
                         :error-messages="errors"
                         required
                         :success="valid"
+                        autocomplete="new-password"
+                        ref="email"
+                        @keyup.enter="loginForm"
                       />
                     </ValidationProvider>
 
@@ -48,7 +53,6 @@
                     >
                       <v-text-field
                         v-model="form.password.value"
-                        id="password"
                         :label="form.password.label"
                         name="password"
                         prepend-icon="mdi-lock"
@@ -56,6 +60,8 @@
                         :error-messages="errors"
                         required
                         :success="valid"
+                        autocomplete="new-password"
+                        @keyup.enter="loginForm"
                       />
                     </ValidationProvider>
                   </ValidationObserver>
@@ -148,6 +154,9 @@ export default {
     if (this.isLogged) {
       this.$router.push({ name: "home" });
     }
+  },
+  mounted() {
+    this.$refs.email.focus();
   }
 };
 </script>

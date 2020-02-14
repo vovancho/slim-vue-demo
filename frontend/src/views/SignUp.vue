@@ -22,6 +22,8 @@
                   >{{ error }}
                 </v-alert>
 
+                <v-text-field label="hidden" style="display:none" /> <!-- Disable Password Manager of Google Chrome -->
+
                 <ValidationObserver ref="signup">
                   <ValidationProvider
                     :name="signUpForm.email.label"
@@ -38,11 +40,12 @@
                       name="login"
                       prepend-icon="mdi-at"
                       type="text"
-                      :readonly="authReadonly"
-                      @focus="removeReadonly"
                       required
                       :success="valid"
                       v-bind="$attrs"
+                      autocomplete="new-password"
+                      ref="email"
+                      @keyup.enter="signupClicked"
                     />
                   </ValidationProvider>
 
@@ -61,10 +64,10 @@
                       name="password"
                       prepend-icon="mdi-lock"
                       type="password"
-                      :readonly="authReadonly"
-                      @focus="removeReadonly"
                       required
                       :success="valid"
+                      autocomplete="new-password"
+                      @keyup.enter="signupClicked"
                     />
                   </ValidationProvider>
                 </ValidationObserver>
@@ -96,6 +99,7 @@
                       :success="valid"
                       ref="token"
                       class="confirm-input"
+                      @keyup.enter="confirmClicked"
                     >
                       <template v-slot:append-outer>
                         <v-btn large text @click="cancelConfirm">Отмена</v-btn>
@@ -176,7 +180,6 @@ export default {
       },
       error: null,
       isConfirming: false,
-      authReadonly: true, // prevent from storing password
       loading: false
     };
   },
@@ -261,9 +264,6 @@ export default {
       this.confirmForm.token.value = "";
       this.$refs.confirm.reset();
     },
-    removeReadonly() {
-      this.authReadonly = false;
-    },
     confirming() {
       this.confirmForm.email.value = this.signUpForm.email.value;
       this.isConfirming = true;
@@ -276,6 +276,9 @@ export default {
     if (this.isLogged) {
       this.$router.push({ name: "home" });
     }
+  },
+  mounted() {
+    this.$refs.email.focus();
   }
 };
 </script>

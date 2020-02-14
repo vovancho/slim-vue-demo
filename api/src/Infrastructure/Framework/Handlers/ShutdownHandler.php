@@ -26,21 +26,37 @@ class ShutdownHandler
     private $displayErrorDetails;
 
     /**
+     * @var bool
+     */
+    private $logErrors;
+
+    /**
+     * @var bool
+     */
+    private $logErrorDetails;
+
+    /**
      * ShutdownHandler constructor.
      *
      * @param Request $request
-     * @param $errorHandler $errorHandler
+     * @param HttpErrorHandler $errorHandler $errorHandler
      * @param bool $displayErrorDetails
+     * @param bool $logErrors
+     * @param bool $logErrorDetails
      */
     public function __construct(
         Request $request,
         HttpErrorHandler $errorHandler,
-        bool $displayErrorDetails
+        bool $displayErrorDetails,
+        bool $logErrors,
+        bool $logErrorDetails
     )
     {
         $this->request = $request;
         $this->errorHandler = $errorHandler;
         $this->displayErrorDetails = $displayErrorDetails;
+        $this->logErrors = $logErrors;
+        $this->logErrorDetails = $logErrorDetails;
     }
 
     public function __invoke()
@@ -53,7 +69,7 @@ class ShutdownHandler
             $errorType = $error['type'];
             $message = 'An error while processing your request. Please try again later.';
 
-            if ($this->displayErrorDetails) {
+            if ($this->displayErrorDetails || $this->logErrors) {
                 switch ($errorType) {
                     case E_USER_ERROR:
                         $message = "FATAL ERROR: {$errorMessage}. ";
@@ -64,12 +80,13 @@ class ShutdownHandler
                         $message = "WARNING: {$errorMessage}";
                         break;
 
-                    case E_USER_NOTICE:
+                    case E_USER_NOTICE || E_NOTICE:
                         $message = "NOTICE: {$errorMessage}";
                         break;
 
                     case E_USER_DEPRECATED:
-                        return; // hide doctrine warnings
+                        $message = "DEPRECATED: {$errorMessage}";
+                        break;
 
                     default:
                         $message = "ERROR: {$errorMessage}";
@@ -79,10 +96,12 @@ class ShutdownHandler
             }
 
             $exception = new HttpInternalServerErrorException($this->request, $message);
-            $response = $this->errorHandler->__invoke($this->request, $exception, $this->displayErrorDetails, false, false);
+            $response = $this->errorHandler->__invoke($this->request, $exception, $this->displayErrorDetails, $this->logErrors, $this->logErrorDetails);
 
-            $responseEmitter = new ResponseEmitter();
-            $responseEmitter->emit($response);
+            if ($this->displayErrorDetails) {
+                $responseEmitter = new ResponseEmitter();
+                $responseEmitter->emit($response);
+            }
         }
     }
 }

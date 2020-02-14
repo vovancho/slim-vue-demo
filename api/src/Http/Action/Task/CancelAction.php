@@ -17,7 +17,7 @@ use Slim\Routing\RouteContext;
 use OpenApi\Annotations as OA;
 
 /**
- * @OA\Post(
+ * @OA\Delete(
  *     path="/tasks/cancel/{id}",
  *     summary="Отменить задачу",
  *     tags={"Обработка задач"},
@@ -26,7 +26,7 @@ use OpenApi\Annotations as OA;
  *         in="path",
  *         description="ID задачи",
  *         example="3b525ad0-489f-11ea-a264-0242ac140008",
- *         @OA\Schema(type="string")
+ *         @OA\Schema(type="string", format="uuid")
  *     ),
  *     @OA\Response(response=204, description="Задача отменена"),
  *     @OA\Response(response=401, ref="#/components/responses/401"),

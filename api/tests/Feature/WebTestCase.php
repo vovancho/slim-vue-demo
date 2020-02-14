@@ -38,6 +38,12 @@ class WebTestCase extends TestCase
         return $this->app()->handle($request);
     }
 
+    protected function delete(string $uri, array $params = [], array $headers = []): ResponseInterface
+    {
+        $request = $this->method($uri, 'DELETE', $params, $headers);
+        return $this->app()->handle($request);
+    }
+
     protected function method(
         string $path,
         string $method,
