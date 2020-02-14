@@ -78,10 +78,10 @@ openapi-config-generate:
 	docker-compose run --rm api-php-cli vendor/bin/openapi ./src/Http/Action --output ./public/openapi.yml
 
 init-env-windows:
-	echo n | copy /-y ".env.example" ".env"
-	echo n | copy /-y "api/.env.example" "api/.env"
-	echo n | copy /-y "frontend/.env.example" "frontend/.env"
-	echo n | copy /-y "websocket/.env.example" "websocket/.env"
+	echo n | copy /-y ".\.env.example" ".\.env"
+	echo n | copy /-y ".\api\.env.example" ".\api\.env"
+	echo n | copy /-y ".\frontend\.env.example" ".\frontend\.env"
+	echo n | copy /-y ".\websocket\.env.example" ".\websocket\.env"
 
 init-env-linux:
 	cp -n .env.example .env
