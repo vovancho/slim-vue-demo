@@ -87,6 +87,7 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - CHOKIDAR_INTERVAL=100
       - YOUR_APP_WEB_HTTP_PORT=8080
+    command: sh -c "until [ -f .ready ] ; do sleep 1 ; done && yarn serve"
 
   mailer:
     image: mailhog/mailhog

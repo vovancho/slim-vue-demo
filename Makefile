@@ -24,7 +24,7 @@ docker-pull:
 docker-build:
 	docker-compose build
 
-project-init: api-composer-install frontend-assets-install api-oauth-keys openapi-config-generate api-wait-db api-migrations api-fixtures api-ready
+project-init: api-composer-install frontend-assets-install frontend-ready api-oauth-keys openapi-config-generate api-wait-db api-migrations api-fixtures api-ready
 
 api-composer-install:
 	docker-compose run --rm api-php-cli composer install
@@ -52,6 +52,9 @@ api-process-consumer:
 
 api-ready:
 	docker-compose exec api-php-cli touch .ready
+
+frontend-ready:
+	docker-compose run --rm frontend-node touch .ready
 
 api-test:
 	docker-compose run --rm api-php-cli vendor/bin/phpunit
