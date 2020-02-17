@@ -107,7 +107,7 @@ services:
     working_dir: /var/www/websocket
     depends_on:
       - project-amqp
-    command: sh -c "/start.sh && npm start"
+    command: sh -c "until [ -f .ready ] ; do sleep 1 ; done && /start.sh && npm start"
 
   project-amqp:
     container_name: project-amqp
@@ -132,6 +132,12 @@ services:
       - "8086:8080"
     depends_on:
       - api-nginx
+
+  maintenance:
+    image: alpine
+    volumes:
+      - ./:/var/www
+    working_dir: /var/www
 
 volumes:
   composer:

@@ -11,7 +11,7 @@
 
     <v-content>
       <v-container class="fill-height">
-        <tasks/>
+        <tasks v-if="isLogged"/>
       </v-container>
     </v-content>
 
