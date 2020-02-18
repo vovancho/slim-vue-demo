@@ -11,7 +11,7 @@
 
     <v-content>
       <v-container class="fill-height">
-        <tasks v-if="isLogged"/>
+        <tasks v-if="isLogged" />
       </v-container>
     </v-content>
 
@@ -31,7 +31,7 @@ import tasks from "../components/Tasks.vue";
 
 export default {
   components: {
-    tasks,
+    tasks
   },
   computed: {
     ...mapGetters(["isLogged", "userEmail"])

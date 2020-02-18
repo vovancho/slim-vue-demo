@@ -58,7 +58,7 @@
                         type="text"
                         :error-messages="mergeErrors(errors, form.name.error)"
                         required
-                        :success="valid"
+                        ref="name"
                       />
                     </ValidationProvider>
 
@@ -103,6 +103,7 @@
 </template>
 
 <script>
+import Vue from "vue";
 import form from "../mixins/form";
 import { createNamespacedHelpers } from "vuex";
 
@@ -158,10 +159,7 @@ export default {
                 this.error = errorObj.description;
               }
               if (errorObj.formErrors) {
-                this.form = this.assignErrors(
-                  this.form,
-                  errorObj.formErrors
-                );
+                this.form = this.assignErrors(this.form, errorObj.formErrors);
               }
             }
           } else {
@@ -170,12 +168,25 @@ export default {
           this.loading = false;
         }
       }
+    },
+    resetForm() {
+      this.form.name.value = "";
+      this.form.type.value = "public";
+    },
+    focusNameInput() {
+      this.$nextTick(() => {
+        this.$refs.name.focus();
+      });
     }
   },
   watch: {
     show: function(val) {
       if (val) {
-        this.form.type.value = "public";
+        Vue.nextTick(() => {
+          this.resetForm();
+          this.$refs["tasks-new"].reset();
+          this.focusNameInput();
+        });
       }
     }
   }

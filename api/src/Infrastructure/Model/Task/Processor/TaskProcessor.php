@@ -50,8 +50,10 @@ abstract class TaskProcessor
             }
         } catch (\Exception $e) {
             if (isset($task)) {
+                if ($task->isWait()) {
+                    $this->removePosition($task);
+                }
                 $task->error($e);
-                $this->removePosition($task);
                 $this->flusher->flush($task);
             } else {
                 throw $e;

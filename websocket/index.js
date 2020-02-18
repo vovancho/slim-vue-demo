@@ -18,7 +18,6 @@ server.on('connection', function (ws, request) {
     if (data.type && data.type === 'auth') {
       try {
         let token = jwt.verify(data.token, jwtKey, {algorithms: ['RS256']});
-        console.log('user_id: %s', token.sub);
         ws.user_id = token.sub;
       } catch (err) {
         console.log(err);
@@ -36,10 +35,8 @@ amqp.connect(process.env.WS_AMQP_URI, function(err, conn) {
     let queue = 'tasks.notifications.queue';
     ch.consume(queue, function(message) {
       let value = JSON.parse(message.content);
-      console.log('consumed:', value);
 
       server.clients.forEach(ws => {
-        console.log('sending:', ws.user_id, value.user_id, ws.user_id === value.user_id);
         if (ws.user_id) {
           switch (value.type) {
             case 'private':

@@ -30,4 +30,3 @@ class UserFixture extends AbstractFixture
         $this->addReference('user', $user);
     }
 }
-

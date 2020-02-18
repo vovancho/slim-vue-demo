@@ -29,8 +29,7 @@ const actions = {
     }
   },
   async createTask(context, { name, type }) {
-    let response = await api.createTask(name, type);
-    console.log(response);
+    return api.createTask(name, type);
   },
   processLoading({ commit }) {
     commit("processLoading");
@@ -41,8 +40,7 @@ const actions = {
     );
   },
   async cancelTask(context, id) {
-    let response = await api.cancelTask(id);
-    console.log(response);
+    return api.cancelTask(id);
   },
   async wsNotificationsInit({ rootState, state, dispatch, commit }) {
     const socket = new WebSocket(process.env.VUE_APP_WS_URL);
@@ -60,7 +58,6 @@ const actions = {
 
     socket.onmessage = async function(event) {
       let data = JSON.parse(event.data);
-      console.log("data:", data);
 
       switch (data.event) {
         case "Api\\Model\\Task\\Entity\\Task\\Event\\TaskCreated": {

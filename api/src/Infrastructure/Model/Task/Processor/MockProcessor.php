@@ -10,13 +10,14 @@ use Generator;
 
 class MockProcessor extends TaskProcessor
 {
+    public $probabilityOfError = 0.5; // Вероятность выполнения с ошибкой 50%
     private $errorCase;
 
     function process(): Generator
     {
         $completedPercent = 0;
-        $this->errorCase = rand(1, 100) > 100;
-        $addedPercent = rand(10, 25);
+        $this->errorCase = rand(1, 100) < ($this->probabilityOfError * 100);
+        $addedPercent = rand(25, 40);
         $stages = ceil(100 / $addedPercent);
 
         for ($i = 1; $i <= $stages; $i++) {
