@@ -93,7 +93,6 @@ services:
     image: mailhog/mailhog
     restart: unless-stopped
     ports:
-      - "1025:1025"
       - "8082:8025"
 
   project-ws:

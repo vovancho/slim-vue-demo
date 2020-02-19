@@ -58,9 +58,6 @@ api-migrations:
 api-fixtures:
 	docker-compose run --rm api-php-cli php bin/app.php fixtures:load
 
-api-process-consumer:
-	docker-compose run --rm api-php-cli php bin/app.php tasks:process
-
 api-ready:
 	docker-compose run --rm maintenance touch api/.ready
 
