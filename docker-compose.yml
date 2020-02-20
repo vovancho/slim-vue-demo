@@ -21,7 +21,24 @@ services:
       context: ./api/docker
       dockerfile: php-cli.docker
     environment:
-      - "XDEBUG_CONFIG=remote_enable=1 remote_host=host.docker.internal"
+      - XDEBUG_CONFIG=remote_enable=1 remote_host=host.docker.internal
+      - API_ENV=${API_ENV}
+      - API_DEBUG=${API_DEBUG}
+      - API_DB_URL=${API_DB_URL}
+      - API_MAILER_HOST=${API_MAILER_HOST}
+      - API_MAILER_PORT=${API_MAILER_PORT}
+      - API_MAILER_USERNAME=${API_MAILER_USERNAME}
+      - API_MAILER_PASSWORD=${API_MAILER_PASSWORD}
+      - API_MAILER_ENCRYPTION=${API_MAILER_ENCRYPTION}
+      - API_MAILER_FROM_EMAIL=${API_MAILER_FROM_EMAIL}
+      - API_OAUTH_PUBLIC_KEY_PATH=${API_OAUTH_PUBLIC_KEY_PATH}
+      - API_OAUTH_PRIVATE_KEY_PATH=${API_OAUTH_PRIVATE_KEY_PATH}
+      - API_OAUTH_ENCRYPTION_KEY=${API_OAUTH_ENCRYPTION_KEY}
+      - API_AMQP_HOST=${API_AMQP_HOST}
+      - API_AMQP_PORT=${API_AMQP_PORT}
+      - API_AMQP_USERNAME=${API_AMQP_USERNAME}
+      - API_AMQP_PASSWORD=${API_AMQP_PASSWORD}
+      - API_AMQP_VHOST=${API_AMQP_VHOST}
     volumes:
       - ./api:/var/www/api
       - composer:/root/.composer/cache
@@ -37,7 +54,24 @@ services:
       context: ./api/docker
       dockerfile: php-fpm.docker
     environment:
-      - "XDEBUG_CONFIG=remote_enable=1 remote_host=host.docker.internal"
+      - XDEBUG_CONFIG=remote_enable=1 remote_host=host.docker.internal
+      - API_ENV=${API_ENV}
+      - API_DEBUG=${API_DEBUG}
+      - API_DB_URL=${API_DB_URL}
+      - API_MAILER_HOST=${API_MAILER_HOST}
+      - API_MAILER_PORT=${API_MAILER_PORT}
+      - API_MAILER_USERNAME=${API_MAILER_USERNAME}
+      - API_MAILER_PASSWORD=${API_MAILER_PASSWORD}
+      - API_MAILER_ENCRYPTION=${API_MAILER_ENCRYPTION}
+      - API_MAILER_FROM_EMAIL=${API_MAILER_FROM_EMAIL}
+      - API_OAUTH_PUBLIC_KEY_PATH=${API_OAUTH_PUBLIC_KEY_PATH}
+      - API_OAUTH_PRIVATE_KEY_PATH=${API_OAUTH_PRIVATE_KEY_PATH}
+      - API_OAUTH_ENCRYPTION_KEY=${API_OAUTH_ENCRYPTION_KEY}
+      - API_AMQP_HOST=${API_AMQP_HOST}
+      - API_AMQP_PORT=${API_AMQP_PORT}
+      - API_AMQP_USERNAME=${API_AMQP_USERNAME}
+      - API_AMQP_PASSWORD=${API_AMQP_PASSWORD}
+      - API_AMQP_VHOST=${API_AMQP_VHOST}
     volumes:
       - ./api:/var/www/api
     working_dir: /var/www/api
@@ -49,6 +83,24 @@ services:
     build:
       context: ./api/docker
       dockerfile: php-cli.docker
+    environment:
+      - API_ENV=${API_ENV}
+      - API_DEBUG=${API_DEBUG}
+      - API_DB_URL=${API_DB_URL}
+      - API_MAILER_HOST=${API_MAILER_HOST}
+      - API_MAILER_PORT=${API_MAILER_PORT}
+      - API_MAILER_USERNAME=${API_MAILER_USERNAME}
+      - API_MAILER_PASSWORD=${API_MAILER_PASSWORD}
+      - API_MAILER_ENCRYPTION=${API_MAILER_ENCRYPTION}
+      - API_MAILER_FROM_EMAIL=${API_MAILER_FROM_EMAIL}
+      - API_OAUTH_PUBLIC_KEY_PATH=${API_OAUTH_PUBLIC_KEY_PATH}
+      - API_OAUTH_PRIVATE_KEY_PATH=${API_OAUTH_PRIVATE_KEY_PATH}
+      - API_OAUTH_ENCRYPTION_KEY=${API_OAUTH_ENCRYPTION_KEY}
+      - API_AMQP_HOST=${API_AMQP_HOST}
+      - API_AMQP_PORT=${API_AMQP_PORT}
+      - API_AMQP_USERNAME=${API_AMQP_USERNAME}
+      - API_AMQP_PASSWORD=${API_AMQP_PASSWORD}
+      - API_AMQP_VHOST=${API_AMQP_VHOST}
     volumes:
       - ./api:/var/www/api
     working_dir: /var/www/api
@@ -87,6 +139,8 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - CHOKIDAR_INTERVAL=100
       - YOUR_APP_WEB_HTTP_PORT=8080
+      - VUE_APP_API_URL=${VUE_APP_API_URL}
+      - VUE_APP_WS_URL=${VUE_APP_WS_URL}
     command: sh -c "until [ -f .ready ] ; do sleep 1 ; done && yarn serve"
 
   mailer:
@@ -99,6 +153,9 @@ services:
     container_name: project-ws
     build:
       context: ./websocket/docker
+    environment:
+      - WS_JWT_PUBLIC_KEY=${WS_JWT_PUBLIC_KEY}
+      - WS_AMQP_URI=${WS_AMQP_URI}
     volumes:
       - ./websocket:/var/www/websocket
     ports:

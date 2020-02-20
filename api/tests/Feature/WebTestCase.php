@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 use Slim\App;
 use Slim\Factory\AppFactory;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -113,7 +114,8 @@ class WebTestCase extends TestCase
 
         $responseFactory = $app->getResponseFactory();
         $callableResolver = $app->getCallableResolver();
-        $errorHandler = new HttpErrorHandler($callableResolver, $responseFactory);
+        $logger = $container->get(LoggerInterface::class);
+        $errorHandler = new HttpErrorHandler($callableResolver, $responseFactory, $logger);
 
         $app->addRoutingMiddleware();
 

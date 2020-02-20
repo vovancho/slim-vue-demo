@@ -27,9 +27,6 @@ project-init: api-composer-install api-oauth-keys copy-api-oauth-keys frontend-a
 
 init-env:
 	docker-compose run --rm maintenance sh -c 'if [ ! -f .env ]; then cp -i .env.example .env; fi'
-	docker-compose run --rm maintenance sh -c 'if [ ! -f api/.env ]; then cp -i api/.env.example api/.env; fi'
-	docker-compose run --rm maintenance sh -c 'if [ ! -f frontend/.env ]; then cp -i frontend/.env.example frontend/.env; fi'
-	docker-compose run --rm maintenance sh -c 'if [ ! -f websocket/.env ]; then cp -i websocket/.env.example websocket/.env; fi'
 
 api-composer-install:
 	docker-compose run --rm api-php-cli composer install
