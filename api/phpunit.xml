@@ -1,20 +1,42 @@
-<phpunit
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/7.1/phpunit.xsd"
-    colors="true"
-    bootstrap="tests/bootstrap.php"
->
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/8.5/phpunit.xsd"
+    bootstrap="vendor/autoload.php"
+    executionOrder="depends,defects"
+    beStrictAboutCoversAnnotation="true"
+    beStrictAboutOutputDuringTests="true"
+    beStrictAboutTodoAnnotatedTests="true"
+    cacheResultFile="var/cache/.phpunit.result.cache"
+    verbose="true">
     <testsuites>
-        <testsuite name="feature">
-            <directory>./tests/Feature</directory>
-        </testsuite>
         <testsuite name="unit">
-            <directory>./tests/Unit</directory>
+            <directory suffix="Test.php">src/Auth/Test/Unit</directory>
+            <directory suffix="Test.php">src/TaskHandler/Test/Unit</directory>
+            <directory suffix="Test.php">src/Frontend/Test/Unit</directory>
+            <directory suffix="Test.php">src/Http/Test/Unit</directory>
+        </testsuite>
+        <testsuite name="functional">
+            <directory suffix="Test.php">tests/Functional</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">./src/</directory>
+            <directory suffix=".php">src</directory>
+            <exclude>
+                <directory>src/Auth/Test</directory>
+                <directory>src/TaskHandler/Test</directory>
+                <directory>src/Frontend/Test</directory>
+                <directory>src/Http/Test</directory>
+            </exclude>
         </whitelist>
     </filter>
+
+    <php>
+        <env name="API_ENV" value="test" force="true"/>
+        <env name="API_DEBUG" value="1" force="true"/>
+
+        <env name="API_OAUTH_PUBLIC_KEY_PATH" value="tests/data/public.key" force="true"/>
+        <env name="API_OAUTH_PRIVATE_KEY_PATH" value="tests/data/private.key" force="true"/>
+        <env name="API_OAUTH_ENCRYPTION_KEY" value="test" force="true"/>
+    </php>
 </phpunit>

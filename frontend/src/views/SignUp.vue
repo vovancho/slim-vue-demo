@@ -152,7 +152,7 @@ export default {
         email: {
           label: "E-Mail",
           value: "",
-          rules: { required: true /*, email: true*/ },
+          rules: { required: true, email: true },
           error: null
         },
         password: {
@@ -172,7 +172,7 @@ export default {
         token: {
           label: "Код подтверждения",
           value: "",
-          rules: { required: true, min: 6 },
+          rules: { required: true, min: 6, max: 6 },
           error: null,
           hint:
             "Проверьте электронную почту, и введите код подтверждения, указанный в письме"
@@ -206,15 +206,15 @@ export default {
           this.loading = false;
         } catch (error) {
           if (error.response) {
-            let errorObj = error.response.data.error;
+            let errorObj = error.response.data;
             if (errorObj) {
-              if (errorObj.description) {
-                this.error = errorObj.description;
+              if (errorObj.message) {
+                this.error = errorObj.message;
               }
-              if (errorObj.formErrors) {
+              if (errorObj.errors) {
                 this.confirmForm = this.assignErrors(
                   this.confirmForm,
-                  errorObj.formErrors
+                  errorObj.errors
                 );
               }
             }
@@ -240,15 +240,15 @@ export default {
           this.loading = false;
         } catch (error) {
           if (error.response) {
-            let errorObj = error.response.data.error;
+            let errorObj = error.response.data;
             if (errorObj) {
-              if (errorObj.description) {
-                this.error = errorObj.description;
+              if (errorObj.message) {
+                this.error = errorObj.message;
               }
-              if (errorObj.formErrors) {
+              if (errorObj.errors) {
                 this.signUpForm = this.assignErrors(
                   this.signUpForm,
-                  errorObj.formErrors
+                  errorObj.errors
                 );
               }
             }

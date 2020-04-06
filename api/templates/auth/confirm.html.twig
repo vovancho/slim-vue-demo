@@ -1,0 +1,8 @@
+{% extends 'mail.html.twig' %}
+
+{% block body %}
+
+    <p style="margin: 0 0 10px 0">Подтвердите Ваш E-Mail, введите код в окне регистрации:</p>
+    <p style="margin: 0; font-size: 32px; color: blue">{{ token.value }}</p>
+
+{% endblock %}

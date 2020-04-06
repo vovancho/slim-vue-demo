@@ -63,17 +63,17 @@
                     </ValidationProvider>
 
                     <ValidationProvider
-                      :name="form.type.label"
-                      :rules="form.type.rules"
+                      :name="form.visibility.label"
+                      :rules="form.visibility.rules"
                       v-slot="{ errors }"
                     >
                       <v-select
-                        v-model="form.type.value"
-                        :label="form.type.label"
-                        :items="types"
-                        name="type"
+                        v-model="form.visibility.value"
+                        :label="form.visibility.label"
+                        :items="visibilities"
+                        name="visibility"
                         prepend-icon="mdi-lock"
-                        :error-messages="mergeErrors(errors, form.type.error)"
+                        :error-messages="mergeErrors(errors, form.visibility.error)"
                         required
                       ></v-select>
                     </ValidationProvider>
@@ -113,7 +113,7 @@ export default {
   mixins: [form],
   data() {
     return {
-      types: [
+      visibilities: [
         { value: "public", text: "Общая" },
         { value: "private", text: "Приватная" }
       ],
@@ -124,8 +124,8 @@ export default {
           rules: { required: true, max: 255 },
           error: null
         },
-        type: {
-          label: "Тип задачи",
+        visibility: {
+          label: "Видимость задачи",
           value: "",
           rules: { required: true, oneOf: ["public", "private"] },
           error: null
@@ -153,13 +153,13 @@ export default {
           this.show = false;
         } catch (error) {
           if (error.response) {
-            let errorObj = error.response.data.error;
+            let errorObj = error.response.data;
             if (errorObj) {
-              if (errorObj.description) {
-                this.error = errorObj.description;
+              if (errorObj.message) {
+                this.error = errorObj.message;
               }
-              if (errorObj.formErrors) {
-                this.form = this.assignErrors(this.form, errorObj.formErrors);
+              if (errorObj.errors) {
+                this.form = this.assignErrors(this.form, errorObj.errors);
               }
             }
           } else {
@@ -171,7 +171,7 @@ export default {
     },
     resetForm() {
       this.form.name.value = "";
-      this.form.type.value = "public";
+      this.form.visibility.value = "public";
     },
     focusNameInput() {
       this.$nextTick(() => {

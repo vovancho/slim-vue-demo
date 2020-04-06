@@ -17,26 +17,20 @@ const actions = {
   async getTasks({ commit }, options) {
     try {
       let response = await api.getTasks(options);
-      response.data.rows = response.data.rows.map(item => {
-        item.error_message = item.error_message
-          ? JSON.parse(item.error_message)
-          : item.error_message;
-        return item;
-      });
       commit("setTasks", response.data);
     } catch (e) {
       commit("resetTasks");
     }
   },
-  async createTask(context, { name, type }) {
-    return api.createTask(name, type);
+  async createTask(context, { name, visibility }) {
+    return api.createTask(name, visibility);
   },
   processLoading({ commit }) {
     commit("processLoading");
   },
-  canAddTask({ rootState }, { type, userId }) {
+  canAddTask({ rootGetters }, { visibility, authorId }) {
     return (
-      type === "public" || (type === "private" && userId === rootState.userId)
+      visibility === "public" || (visibility === "private" && authorId === rootGetters.userId)
     );
   },
   async cancelTask(context, id) {
@@ -60,11 +54,11 @@ const actions = {
       let data = JSON.parse(event.data);
 
       switch (data.event) {
-        case "Api\\Model\\Task\\Entity\\Task\\Event\\TaskCreated": {
+        case "App\\TaskHandler\\Entity\\Task\\Event\\TaskCreated": {
           if (
             await dispatch("canAddTask", {
-              type: data.type,
-              userId: data.user_id
+              visibility: data.visibility,
+              authorId: data.author_id
             })
           ) {
             commit("processLoading");
@@ -73,16 +67,16 @@ const actions = {
           }
           break;
         }
-        case "Api\\Model\\Task\\Entity\\Task\\Event\\TaskExecuted":
-        case "Api\\Model\\Task\\Entity\\Task\\Event\\TaskCompleted":
-        case "Api\\Model\\Task\\Entity\\Task\\Event\\TaskCanceled":
-        case "Api\\Model\\Task\\Entity\\Task\\Event\\TaskError": {
+        case "App\\TaskHandler\\Entity\\Task\\Event\\TaskExecuted":
+        case "App\\TaskHandler\\Entity\\Task\\Event\\TaskCompleted":
+        case "App\\TaskHandler\\Entity\\Task\\Event\\TaskCanceled":
+        case "App\\TaskHandler\\Entity\\Task\\Event\\TaskError": {
           commit("processLoading");
           await dispatch("getTasks");
           commit("processLoaded");
           break;
         }
-        case "Api\\Model\\Task\\Entity\\Task\\Event\\TaskProcessed": {
+        case "App\\TaskHandler\\Entity\\Task\\Event\\TaskProcessed": {
           let hasTask = state.items.rows.some(item => item.id === data.task_id);
           if (hasTask) {
             commit("updateTask", {

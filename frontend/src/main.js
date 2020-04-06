@@ -20,13 +20,13 @@ if (user) {
 
 axios.interceptors.response.use(null, async error => {
   if (!error.response || error.response.status !== 401) {
-    return error;
+    throw error;
   }
   const request = error.config;
   if (request.data) {
     let data = JSON.parse(request.data);
     if (data && data.grant_type) {
-      return error;
+      throw error;
     }
   }
 
@@ -34,7 +34,7 @@ axios.interceptors.response.use(null, async error => {
     await store.dispatch("refresh")
   } catch (e) {
     await router.push({ name: "login" });
-    return error;
+    throw error;
   }
 
   request.headers["Authorization"] = "Bearer " + store.state.user.access_token;

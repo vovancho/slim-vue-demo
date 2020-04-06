@@ -138,9 +138,9 @@ export default {
           await this.$router.push({ name: "home" });
         } catch (error) {
           if (error.response) {
-            let errorObj = error.response.data.error;
-            if (errorObj && errorObj.description) {
-              this.error = errorObj.description;
+            let errorObj = error.response.data;
+            if (errorObj && errorObj.message) {
+              this.error = errorObj.message;
             }
           } else {
             console.log(error.message);

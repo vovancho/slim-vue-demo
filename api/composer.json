@@ -4,30 +4,37 @@
     "license": "MIT",
     "require": {
         "php": ">=7.4",
-        "ext-json": "*",
+        "ext-json": "^7.4",
         "doctrine/migrations": "^2.2",
         "doctrine/orm": "^2.7",
+        "finesse/swiftmailer-defaults-plugin": "^2.0",
         "geekdevs/swift-mailer-extensions": "^2.0",
+        "laminas/laminas-config-aggregator": "^1.2",
         "league/oauth2-server": "^8.0",
         "monolog/monolog": "^1.24",
         "php-amqplib/php-amqplib": "^2.11",
         "php-di/php-di": "^6.0",
         "ramsey/uuid": "^3.9",
         "slim/psr7": "^0.5",
-        "slim/slim": "^4.1",
+        "slim/slim": "^4.4",
         "swiftmailer/swiftmailer": "^6.2",
         "symfony/config": "^5.0",
         "symfony/console": "^5.0",
         "symfony/dotenv": "^5.0",
         "symfony/translation": "^5.0",
         "symfony/validator": "^5.0",
+        "twig/twig": "^3.0",
         "webmozart/assert": "^1.6",
-        "zendframework/zend-config-aggregator": "^1.2",
         "zircote/swagger-php": "^3.0"
     },
     "require-dev": {
+        "dms/phpunit-arraysubset-asserts": "^0.2.0",
         "doctrine/data-fixtures": "^1.4",
-        "phpunit/phpunit": "^7.5"
+        "guzzlehttp/guzzle": "^6.5",
+        "overtrue/phplint": "^1.2",
+        "phpunit/phpunit": "^9.1",
+        "roave/security-advisories": "dev-master",
+        "squizlabs/php_codesniffer": "^3.5"
     },
     "config": {
         "process-timeout": 0,
@@ -35,16 +42,21 @@
     },
     "autoload": {
         "psr-4": {
-            "Api\\": "src/"
+            "App\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Api\\Test\\": "tests/"
+            "App\\Test\\": "tests/"
         }
     },
     "scripts": {
-        "app": "php bin/app.php --ansi",
-        "test": "phpunit --colors=always"
+        "lint": "phplint",
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf",
+        "psalm": "psalm",
+        "test": "phpunit --colors=always",
+        "test-coverage": "phpunit --colors=always --coverage-html var/coverage",
+        "app": "php bin/app.php --ansi"
     }
 }

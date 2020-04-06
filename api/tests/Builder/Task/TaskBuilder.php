@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Api\Test\Builder\Task;
 
-
 use Api\Model\Base\Uuid1;
 use Api\Model\Task\Entity\Task\Task;
 use Api\Model\User\Entity\User\User;

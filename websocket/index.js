@@ -38,9 +38,9 @@ amqp.connect(process.env.WS_AMQP_URI, function(err, conn) {
 
       server.clients.forEach(ws => {
         if (ws.user_id) {
-          switch (value.type) {
+          switch (value.visibility) {
             case 'private':
-              if (ws.user_id === value.user_id) {
+              if (ws.user_id === value.author_id) {
                 ws.send(message.content.toString());
               }
               break;

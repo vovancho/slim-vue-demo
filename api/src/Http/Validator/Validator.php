@@ -2,25 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Api\Http\Validator;
+namespace App\Http\Validator;
 
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class Validator
 {
-    private $validator;
+    private ValidatorInterface $validator;
 
     public function __construct(ValidatorInterface $validator)
     {
         $this->validator = $validator;
     }
 
-    public function validate($object): ?Errors
+    public function validate(object $object): void
     {
         $violations = $this->validator->validate($object);
         if ($violations->count() > 0) {
-            return new Errors($violations);
+            throw new ValidationException($violations);
         }
-        return null;
     }
 }
