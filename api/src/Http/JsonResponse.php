@@ -1,30 +1,25 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Владимир
- * Date: 30.12.2019
- * Time: 8:34
- */
+
 declare(strict_types=1);
 
-namespace Api\Http;
+namespace App\Http;
 
-
-use Fig\Http\Message\StatusCodeInterface;
+use Slim\Psr7\Factory\StreamFactory;
 use Slim\Psr7\Headers;
-use Slim\Psr7\Interfaces\HeadersInterface;
 use Slim\Psr7\Response;
 
 class JsonResponse extends Response
 {
-    public function __construct($data, int $status = StatusCodeInterface::STATUS_OK, ?HeadersInterface $headers = null)
+    /**
+     * @param mixed $data
+     * @param int $status
+     */
+    public function __construct($data, int $status = 200)
     {
-        $headers = $headers ? $headers : new Headers();
-        $headers->addHeader('Content-Type', 'application/json');
-
-        parent::__construct($status, $headers, null);
-
-        $this->getBody()->write(json_encode($data, JSON_PRETTY_PRINT + JSON_UNESCAPED_UNICODE));
-        $this->getBody()->rewind();
+        parent::__construct(
+            $status,
+            new Headers(['Content-Type' => 'application/json']),
+            (new StreamFactory())->createStream(json_encode($data, JSON_UNESCAPED_UNICODE + JSON_THROW_ON_ERROR))
+        );
     }
 }

@@ -18,12 +18,12 @@
           </template>
 
           <template #item.user_email="{ item }">
-           <p :class="item.user_id === userId ? 'primary--text font-weight-bold' : ''">{{ item.user_email }}</p>
+           <p :class="item.author_id === userId ? 'primary--text font-weight-bold' : ''">{{ item.author_email }}</p>
           </template>
 
           <template #item.name="{ item }">
             {{ item.name }}
-            <v-icon v-if="item.type === 'private'">mdi-lock</v-icon>
+            <v-icon v-if="item.visibility === 'private'">mdi-lock</v-icon>
           </template>
 
           <template #item.status="{ item }">
@@ -49,7 +49,7 @@
 
           <template #item.data-table-expand="{ item, isExpanded, expand }">
             <v-layout class="align-center">
-              <v-tooltip left v-if="canCancel(item.status, item.user_id)">
+              <v-tooltip left v-if="canCancel(item.status, item.author_id)">
                 <template #activator="{ on }">
                   <v-btn
                     text
@@ -90,11 +90,11 @@
             <td :colspan="headers.length">
               <v-card class="my-3 red lighten-5" tile v-if="item.error_message">
                 <v-card-title class="error-message-trace red--text darken-4">
-                  {{ item.error_message.message }}
+                  {{ item.error_message }}
                 </v-card-title>
-                <v-divider />
-                <v-card-text class="error-message-trace brown--text darken-4">
-                  {{ item.error_message.trace }}
+                <v-divider  v-if="item.error_trace" />
+                <v-card-text class="error-message-trace brown--text darken-4" v-if="item.error_trace">
+                  {{ item.error_trace }}
                 </v-card-text>
               </v-card>
             </td>
@@ -228,10 +228,10 @@ export default {
           this.grid.loading = false;
         } catch (error) {
           if (error.response) {
-            let errorObj = error.response.data.error;
-            if (errorObj && errorObj.description) {
+            let errorObj = error.response.data;
+            if (errorObj && errorObj.message) {
               this.$dialog.error({
-                text: errorObj.description,
+                text: errorObj.message,
                 title: "Ошибка"
               });
             }

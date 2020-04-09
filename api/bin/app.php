@@ -7,50 +7,37 @@ use Doctrine\Migrations\Configuration\Configuration;
 use Doctrine\Migrations\Tools\Console\Helper\ConfigurationHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Dotenv\Dotenv;
-use DI\ContainerBuilder;
+use Symfony\Component\Console\Command\Command;
 
-define('APP_PATH', dirname(__DIR__) . DIRECTORY_SEPARATOR);
+require __DIR__ . '/../vendor/autoload.php';
 
-require APP_PATH . 'vendor/autoload.php';
+/** @var ContainerInterface $container */
+$container = require __DIR__ . '/../config/container.php';
 
-if (file_exists('.env')) {
-    (new Dotenv(true))->load('.env');
-}
+$cli = new Application('Console');
 
-// Instantiate PHP-DI ContainerBuilder
-$containerBuilder = new ContainerBuilder();
+$commands = $container->get('config')['console']['commands'];
 
-if (false) { // Should be set to true in production
-    $containerBuilder->enableCompilation('var/cache');
-}
-
-// Set up settings
-$containerConfig = require APP_PATH . 'app/container.php';
-$containerConfig($containerBuilder);
-
-// Build PHP-DI Container instance
-$container = $containerBuilder->build();
-
-$cli = new Application('Application console');
-
+/** @var EntityManagerInterface $entityManager */
 $entityManager = $container->get(EntityManagerInterface::class);
 $connection = $entityManager->getConnection();
 
 $configuration = new Configuration($connection);
-$configuration->setMigrationsDirectory('src/Data/Migration');
-$configuration->setMigrationsNamespace('Api\Data\Migration');
+$configuration->setMigrationsDirectory(__DIR__ . '/../src/Data/Migration');
+$configuration->setMigrationsNamespace('App\Data\Migration');
+$configuration->setMigrationsTableName('migrations');
+$configuration->setAllOrNothing(true);
+$configuration->setCheckDatabasePlatform(false);
 
 $cli->getHelperSet()->set(new EntityManagerHelper($entityManager), 'em');
 $cli->getHelperSet()->set(new ConfigurationHelper($connection, $configuration), 'configuration');
 
-Doctrine\ORM\Tools\Console\ConsoleRunner::addCommands($cli);
-Doctrine\Migrations\Tools\Console\ConsoleRunner::addCommands($cli);
-
-$commands = $container->get('config')['console']['commands'];
-foreach ($commands as $command) {
-    $cli->add($container->get($command));
+foreach ($commands as $name) {
+    /** @var Command $command */
+    $command = $container->get($name);
+    $cli->add($command);
 }
 
 $cli->run();

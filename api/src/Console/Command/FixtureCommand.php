@@ -1,6 +1,8 @@
 <?php
 
-namespace Api\Console\Command;
+declare(strict_types=1);
+
+namespace App\Console\Command;
 
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Loader;
@@ -12,22 +14,28 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class FixtureCommand extends Command
 {
-    private $em;
-    private $path;
+    private EntityManagerInterface $em;
+    /**
+     * @var string[]
+     */
+    private array $paths;
 
-    public function __construct(EntityManagerInterface $em, string $path)
+    /**
+     * @param EntityManagerInterface $em
+     * @param string[] $paths
+     */
+    public function __construct(EntityManagerInterface $em, array $paths)
     {
         parent::__construct();
         $this->em = $em;
-        $this->path = $path;
+        $this->paths = $paths;
     }
 
     protected function configure(): void
     {
         $this
             ->setName('fixtures:load')
-            ->setDescription('Load fixtures')
-        ;
+            ->setDescription('Load fixtures');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -35,7 +43,10 @@ class FixtureCommand extends Command
         $output->writeln('<comment>Loading fixtures</comment>');
 
         $loader = new Loader();
-        $loader->loadFromDirectory($this->path);
+
+        foreach ($this->paths as $path) {
+            $loader->loadFromDirectory($path);
+        }
 
         $executor = new ORMExecutor($this->em, new ORMPurger());
 
@@ -50,4 +61,3 @@ class FixtureCommand extends Command
         return 0;
     }
 }
-

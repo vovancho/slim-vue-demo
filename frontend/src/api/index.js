@@ -2,7 +2,7 @@ import axios from "axios";
 
 const base = {
   login(username, password) {
-    return axios.post("/oauth/auth", {
+    return axios.post("/v1/oauth/auth", {
       grant_type: "password",
       username,
       password,
@@ -12,30 +12,30 @@ const base = {
     });
   },
   refreshToken(refreshToken) {
-    return axios.post("/oauth/auth", {
+    return axios.post("/v1/oauth/auth", {
       grant_type: "refresh_token",
       refresh_token: refreshToken,
       client_id: "app",
       client_secret: ""
     });
   },
-  signup(email, password) {
-    return axios.post("/auth/signup", { email, password });
+  async signup(email, password) {
+    return axios.post("/v1/auth/signup", { email, password });
   },
   signupConfirm(email, token) {
-    return axios.post("/auth/signup/confirm", { email, token });
+    return axios.post("/v1/auth/signup/confirm", { email, token });
   }
 };
 
 const tasks = {
   getTasks(options) {
-    return axios.get("/tasks", { params: options });
+    return axios.get("/v1/tasks", { params: options });
   },
-  createTask(name, type) {
-    return axios.post("/tasks/create", { name, type });
+  createTask(name, visibility) {
+    return axios.post("/v1/tasks/create", { name, visibility });
   },
   cancelTask(id) {
-    return axios.delete(`/tasks/${id}/cancel`);
+    return axios.delete(`/v1/tasks/${id}/cancel`);
   }
 };
 

@@ -1,4 +1,4 @@
-# Приложение Обработчик задач [![Build Status](https://travis-ci.com/vovancho/slim-vue-demo.svg?token=73g6SyN3hhjhz6WZX1ws&branch=master)](https://travis-ci.com/vovancho/slim-vue-demo)
+# Приложение Обработчик задач [![Build Status](https://travis-ci.com/vovancho/slim-vue-demo.svg?token=73g6SyN3hhjhz6WZX1ws&branch=master)](https://travis-ci.com/vovancho/slim-vue-demo) [![Coverage Status](https://coveralls.io/repos/github/vovancho/slim-vue-demo/badge.svg?branch=master)](https://coveralls.io/github/vovancho/slim-vue-demo?branch=master)
 
 Демонстрационное приложение представляет из себя динамичный многопользовательский обработчик задач. Каждый пользователь может завести свою задачу *(как приватную, так и видимую для всех)*. При этом он может наблюдать за процессом обработки, номером в очереди своих и чужих задач в динамическом списке.
 
@@ -62,7 +62,10 @@ maintenance        |                                                     |  Се
 `SWAGGER_URL`                | URL Swagger UI для CORS защиты веб-сервера API
 `API_ENV`                    | Окружение проекта
 `API_DEBUG`                  | Включить DEBUG режим
-`API_DB_URL`                 | URL подключения PostgreSQL
+`API_DB_HOST`                | Хост подключения к БД PostgreSQL
+`API_DB_USER`                | Пользователь подключения к БД PostgreSQL
+`API_DB_PASSWORD`            | Пароль подключения к БД PostgreSQL
+`API_DB_NAME`                | Имя базы данных подключения к PostgreSQL
 `API_MAILER_HOST`            | Хост почтового сервера
 `API_MAILER_PORT`            | Порт почтового сервера
 `API_MAILER_USERNAME`        | Пользователь почтового сервера
@@ -81,6 +84,7 @@ maintenance        |                                                     |  Се
 `VUE_APP_WS_URL`             | URL WebSocket сервера для фронтенда
 `WS_JWT_PUBLIC_KEY`          | Путь к публичному ключу для WebSocket сервера
 `WS_AMQP_URI`                | URI подключения к AMQP серверу для WebSocket сервера
+`FRONTEND_URL`               | URL фронтенда (для формирования URL, например в электронных письмах)
 
 ## Стек и схема работы
 
@@ -120,4 +124,10 @@ maintenance        |                                                     |  Се
 
 ```bash
 > make test-unit
+```
+
+Запуск только Functional тестов
+
+```bash
+> make test-functional
 ```

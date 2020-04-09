@@ -1,15 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Владимир
- * Date: 04.01.2020
- * Time: 9:54
- */
 
-namespace Api\Http\Middleware;
+declare(strict_types=1);
 
+namespace App\Http\Middleware;
 
-use Api\Http\DomainException;
+use DomainException;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -23,7 +18,7 @@ class OAuthExceptionMiddleware implements MiddlewareInterface
         try {
             $response = $handler->handle($request);
         } catch (OAuthServerException $e) {
-            throw new DomainException($this->translateException($e), $e->getHttpStatusCode(), $e);
+            throw new DomainException($this->translateException($e), $e->getHttpStatusCode());
         }
 
         return $response;

@@ -4,27 +4,32 @@ declare(strict_types=1);
 
 namespace Api\Data\Fixture;
 
-use Api\Model\User\Entity\User\ConfirmToken;
-use Api\Model\User\Entity\User\Email;
-use Api\Model\User\Entity\User\User;
-use Api\Model\User\Entity\User\UserId;
+use App\Auth\Entity\User\Email;
+use App\Auth\Entity\User\Id;
+use App\Auth\Entity\User\Token;
+use App\Auth\Entity\User\User;
+use App\Auth\Service\PasswordHasher;
+use DateTimeImmutable;
 use Doctrine\Common\DataFixtures\AbstractFixture;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 class UserFixture extends AbstractFixture
 {
     public function load(ObjectManager $manager): void
     {
-        $user = new User(
-            UserId::next(),
-            $now = new \DateTimeImmutable(),
+        $hasher = new PasswordHasher();
+
+        $user = User::requestForConfirm(
+            Id::generate(),
+            $date = new DateTimeImmutable(),
             new Email('user@app.dev'),
-            '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', // 'secret'
-            new ConfirmToken('token', new \DateTimeImmutable('+1 day'))
+            $hasher->hash('secret'),
+            $token = new Token($value = (string)rand(100000, 999999), $date->modify('+1 day'))
         );
 
-        $manager->persist($user);
+        $user->confirmSignUp($token->getValue(), new DateTimeImmutable());
 
+        $manager->persist($user);
         $manager->flush();
 
         $this->addReference('user', $user);
