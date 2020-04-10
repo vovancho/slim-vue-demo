@@ -19,6 +19,7 @@ install:
   - travis_retry composer install --dev --prefer-dist --no-interaction --working-dir=api
 
 before_script:
+  - mkdir -p build/logs
   - if [ ! -f .env ]; then cp -i .env.example .env; fi
   - docker-compose run --rm api-php-cli composer lint
   - docker-compose run --rm api-php-cli composer cs-check
@@ -29,4 +30,4 @@ script:
   - docker-compose run --rm api-php-cli vendor/bin/phpunit --coverage-clover var/coverage/clover.xml --colors
 
 after_success:
-  - travis_retry php api/vendor/bin/php-coveralls -x api/var/coverage/clover.xml -o api/var/coverage/coveralls-upload.json -v
+  - travis_retry php api/vendor/bin/php-coveralls -x api/var/coverage/clover.xml -v
