@@ -25,8 +25,10 @@ class LogErrorHandler extends ErrorHandler
     protected function writeToErrorLog(): void
     {
         $this->logger->error($this->exception->getMessage(), [
-            'exception' => $this->exception,
+            'namespace' => get_class($this->exception),
+            'file' => "{$this->exception->getFile()}:{$this->exception->getLine()}",
             'url' => (string)$this->request->getUri(),
+            'trace' => $this->exception->getTraceAsString(),
         ]);
     }
 }

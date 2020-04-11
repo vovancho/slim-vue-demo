@@ -29,8 +29,10 @@ class DomainExceptionMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         } catch (DomainException $exception) {
             $this->logger->warning($exception->getMessage(), [
-                'exception' => $exception,
+                'namespace' => get_class($exception),
+                'file' => "{$exception->getFile()}:{$exception->getLine()}",
                 'url' => (string)$request->getUri(),
+                'trace' => $exception->getTraceAsString(),
             ]);
 
             return $this->jsonResponse([
