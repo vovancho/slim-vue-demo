@@ -48,6 +48,7 @@ mailer             | <sup>8082</sup>                                     |  По
 project-ws         | <sup>8084</sup>                                     |  WebSocket-сервер *(Для отслеживания состояния выполнения задач)*
 project-amqp       | <sup><p>8085 <i>(админка)</i></p><p>5672 </p></sup> |  <p>RabbitMQ сервер *(Очередь для взаимодействия сервисов)* </p><sup><p>Логин/Пароль `rabbit:rabbit`</p></sup>
 swagger-ui         | <sup>8086</sup>                                     |  Документация API
+elk                | <sup>5601</sup>                                     |  <p>Стек ELK для сбора логов </p><sup><p>Сервисов `nginx`, `api-php-fpm`, `api-queue-consumer`</p></sup>
 maintenance        |                                                     |  Сервисный контейнер для инициализации проекта
 
 ## Переменные окружения
@@ -102,6 +103,7 @@ maintenance        |                                                     |  Се
  - PostgreSQL
  - RabbitMQ
  - Swagger UI <sup><i>* документация API</i></sup>
+ - ELK <sup><i>* сбор логов</i></sup>
 
 ### Стек Frontend
 

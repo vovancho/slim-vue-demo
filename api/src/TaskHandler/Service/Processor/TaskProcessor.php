@@ -10,16 +10,19 @@ use App\TaskHandler\Entity\Task\Task;
 use App\TaskHandler\Entity\Task\TaskRepository;
 use Exception;
 use Generator;
+use Psr\Log\LoggerInterface;
 
 abstract class TaskProcessor
 {
     private TaskRepository $tasks;
     private Flusher $flusher;
+    private LoggerInterface $logger;
 
-    public function __construct(TaskRepository $tasks, Flusher $flusher)
+    public function __construct(TaskRepository $tasks, Flusher $flusher, LoggerInterface $logger)
     {
         $this->tasks = $tasks;
         $this->flusher = $flusher;
+        $this->logger = $logger;
     }
 
     public function run(Id $taskId): void
@@ -47,6 +50,12 @@ abstract class TaskProcessor
             }
         } catch (Exception $e) {
             if (isset($task)) {
+                $this->logger->warning($e->getMessage(), [
+                    'namespace' => get_class($e),
+                    'file' => "{$e->getFile()}:{$e->getLine()}",
+                    'trace' => $e->getTraceAsString(),
+                ]);
+
                 if ($task->isWait()) {
                     $this->removePosition($task);
                 }

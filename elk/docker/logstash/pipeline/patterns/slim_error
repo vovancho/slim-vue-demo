@@ -1,0 +1,4 @@
+EXCEPTION_MESSAGE .*?
+EXCEPTION_TRACE \{.*\}
+EXCEPTION_LOGLEVEL \w+
+SLIM_ERROR \[.*?\] API\.%{EXCEPTION_LOGLEVEL:loglevel}: %{EXCEPTION_MESSAGE:exception_message} %{EXCEPTION_TRACE:exception_trace} \[.*\]

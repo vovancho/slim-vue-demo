@@ -1,0 +1,1 @@
+NGINX_ACCESSLOG_COMBINED %{IPORHOST:clientip} - %{USERNAME:remote_user} \[%{HTTPDATE:date_timestamp}\] \"(?:%{WORD:method} %{NOTSPACE:request_uri}(?: HTTP/%{NUMBER:httpversion})?|%{DATA:raw_request})\" %{INT:status} %{NUMBER:body_bytes_sent} \"%{DATA:http_referer}\" \"%{DATA:http_user_agent}\"

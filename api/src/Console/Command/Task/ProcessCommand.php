@@ -33,8 +33,6 @@ class ProcessCommand extends ConsoleCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('<comment>Consume messages</comment>');
-
         $consumerTag = 'consumer_' . getmypid();
         $this->channel->basicConsume(
             JobChannel::QUEUE,
@@ -45,7 +43,6 @@ class ProcessCommand extends ConsoleCommand
             false,
             function ($message) use ($output) {
                 $body = json_decode($message->body, true);
-                $output->writeln(print_r($body, true));
 
                 $command = new Command();
                 $command->id = new Id($body['id']);
@@ -59,7 +56,5 @@ class ProcessCommand extends ConsoleCommand
         );
 
         $this->channel->wait();
-
-        $output->writeln('<info>Done!</info>');
     }
 }
