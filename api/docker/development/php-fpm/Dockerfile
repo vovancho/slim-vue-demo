@@ -1,5 +1,7 @@
 FROM php:7.4-fpm-alpine
 
+ENV TZ=Europe/Moscow
+
 RUN apk add --no-cache autoconf g++ make \
     && pecl install xdebug \
     && rm -rf /tmp/pear \
@@ -19,3 +21,6 @@ COPY ./development/php-fpm/conf.d /usr/local/etc/php/conf.d
 COPY ./development/php-fpm/php-fpm.d /usr/local/etc/php-fpm.d
 
 WORKDIR /var/www
+
+COPY ./development/php-fpm/entrypoint.sh /usr/local/bin/docker-php-entrypoint
+RUN chmod +x /usr/local/bin/docker-php-entrypoint

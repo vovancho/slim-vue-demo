@@ -1,24 +1,15 @@
-version: '3.7'
+version: "3.7"
 services:
 
   gateway:
-    container_name: gateway
-    build:
-      context: gateway/docker
-      dockerfile: development/nginx/Dockerfile
-      args:
-        ELK_KIBANA_USERNAME: ${ELK_KIBANA_USERNAME}
-        ELK_KIBANA_PASSWORD: ${ELK_KIBANA_PASSWORD}
-        SWAGGER_UI_USERNAME: ${SWAGGER_UI_USERNAME}
-        SWAGGER_UI_PASSWORD: ${SWAGGER_UI_PASSWORD}
+    image: ${REGISTRY}/slim-vue-demo-gateway:${IMAGE_TAG}
+    restart: always
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/html:/var/www/html:ro
     ports:
-      - "5601:5601"
-      - "8080:8080"
-      - "8081:8081"
-      - "8082:8082"
-      - "8083:8083"
-      - "8084:8084"
-      - "8085:8085"
+      - "80:80"
+      - "443:443"
     depends_on:
       - frontend-nginx
       - api-nginx
@@ -26,43 +17,14 @@ services:
       - amqp
       - swagger-ui
       - elk
-      - mailer
 
   frontend-nginx:
-    container_name: frontend-nginx
-    build:
-      context: frontend/docker/development/nginx
-    depends_on:
-      - frontend-node
-
-  frontend-node:
-    container_name: frontend-node
-    build:
-      context: frontend/docker/development/node
-    volumes:
-      - ./frontend:/var/www
-    environment:
-      VUE_APP_API_URL: ${VUE_APP_API_URL}
-      VUE_APP_WS_URL: ${VUE_APP_WS_URL}
-    command: sh -c "until [ -f .ready ] ; do sleep 1 ; done && yarn serve"
-    tty: true
-
-  frontend-node-cli:
-    container_name: frontend-node-cli
-    build:
-      context: frontend/docker/development/node
-    volumes:
-      - ./frontend:/var/www
+    image: ${REGISTRY}/slim-vue-demo-frontend-nginx:${IMAGE_TAG}
+    restart: always
 
   api-nginx:
-    container_name: api-nginx
-    build:
-      context: api/docker
-      dockerfile: development/nginx/Dockerfile
-      args:
-        SWAGGER_URL: ${SWAGGER_URL}
-    volumes:
-      - ./api:/var/www
+    image: ${REGISTRY}/slim-vue-demo-api-nginx:${IMAGE_TAG}
+    restart: always
     logging:
       driver: gelf
       options:
@@ -72,14 +34,11 @@ services:
       - api-php-fpm
 
   api-php-fpm:
-    container_name: api-php-fpm
-    build:
-      context: api/docker
-      dockerfile: development/php-fpm/Dockerfile
+    image: ${REGISTRY}/slim-vue-demo-api-php-fpm:${IMAGE_TAG}
+    restart: always
     environment:
-      PHP_IDE_CONFIG: serverName=docker_api
-      API_ENV: ${API_ENV}
-      API_DEBUG: ${API_DEBUG}
+      API_ENV: prod
+      API_DEBUG: 0
       API_DB_HOST: ${API_DB_HOST}
       API_DB_USER: ${API_DB_USER}
       API_DB_PASSWORD: ${API_DB_PASSWORD}
@@ -98,9 +57,7 @@ services:
       API_AMQP_USERNAME: ${API_AMQP_USERNAME}
       API_AMQP_PASSWORD: ${API_AMQP_PASSWORD}
       API_AMQP_VHOST: ${API_AMQP_VHOST}
-      FRONTEND_URL: ${FRONTEND_URL}
-    volumes:
-      - ./api:/var/www
+      FRONTEND_URL: https://${DOMAIN_FRONTEND}
     logging:
       driver: gelf
       options:
@@ -108,13 +65,11 @@ services:
         tag: "api-php-fpm"
 
   api-queue-consumer:
-    container_name: api-queue-consumer
-    build:
-      context: api/docker
-      dockerfile: development/php-cli/Dockerfile
+    image: ${REGISTRY}/slim-vue-demo-api-queue-consumer:${IMAGE_TAG}
+    restart: always
     environment:
-      API_ENV: ${API_ENV}
-      API_DEBUG: ${API_DEBUG}
+      API_ENV: prod
+      API_DEBUG: 0
       API_DB_HOST: ${API_DB_HOST}
       API_DB_USER: ${API_DB_USER}
       API_DB_PASSWORD: ${API_DB_PASSWORD}
@@ -133,9 +88,7 @@ services:
       API_AMQP_USERNAME: ${API_AMQP_USERNAME}
       API_AMQP_PASSWORD: ${API_AMQP_PASSWORD}
       API_AMQP_VHOST: ${API_AMQP_VHOST}
-      FRONTEND_URL: ${FRONTEND_URL}
-    volumes:
-      - ./api:/var/www
+      FRONTEND_URL: https://${DOMAIN_FRONTEND}
     logging:
       driver: gelf
       options:
@@ -144,13 +97,10 @@ services:
     command: sh -c "until [ -f .ready ] ; do sleep 1 ; done && php bin/app.php tasks:process"
 
   api-php-cli:
-    container_name: api-php-cli
-    build:
-      context: api/docker
-      dockerfile: development/php-cli/Dockerfile
+    image: ${REGISTRY}/slim-vue-demo-api-php-cli:${IMAGE_TAG}
     environment:
-      API_ENV: ${API_ENV}
-      API_DEBUG: ${API_DEBUG}
+      APP_ENV: prod
+      APP_DEBUG: 0
       API_DB_HOST: ${API_DB_HOST}
       API_DB_USER: ${API_DB_USER}
       API_DB_PASSWORD: ${API_DB_PASSWORD}
@@ -169,42 +119,28 @@ services:
       API_AMQP_USERNAME: ${API_AMQP_USERNAME}
       API_AMQP_PASSWORD: ${API_AMQP_PASSWORD}
       API_AMQP_VHOST: ${API_AMQP_VHOST}
-      FRONTEND_URL: ${FRONTEND_URL}
-    volumes:
-      - ./api:/var/www
-      - composer:/root/.composer/cache
+      FRONTEND_URL: https://${DOMAIN_FRONTEND}
 
   api-db:
-    container_name: api-db
     image: postgres:12.2-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: ${API_DB_PASSWORD}
+      POSTGRES_DB: app
+      TZ: Europe/Moscow
     volumes:
       - api-postgres:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: ${API_DB_USER}
-      POSTGRES_PASSWORD: ${API_DB_PASSWORD}
-      POSTGRES_DB: ${API_DB_NAME}
-      TZ: Europe/Moscow
-    ports:
-      - "54321:5432"
-
-  mailer:
-    image: mailhog/mailhog
 
   ws:
-    container_name: ws
-    build:
-      context: websocket/docker
+    image: ${REGISTRY}/slim-vue-demo-ws:${IMAGE_TAG}
     environment:
       WS_JWT_PUBLIC_KEY: ${WS_JWT_PUBLIC_KEY}
       WS_AMQP_URI: ${WS_AMQP_URI}
-    volumes:
-      - ./websocket:/var/www
     command: sh -c "until [ -f .ready ] ; do sleep 1 ; done && /start.sh && npm start"
 
   amqp:
-    container_name: amqp
-    build:
-      context: amqp/docker
+    image: ${REGISTRY}/slim-vue-demo-amqp:${IMAGE_TAG}
     environment:
       RABBITMQ_ERLANG_COOKIE: ${API_AMQP_COOKIE}
       RABBITMQ_DEFAULT_USER: ${API_AMQP_USERNAME}
@@ -213,7 +149,6 @@ services:
       - amqp:/var/lib/rabbitmq
 
   swagger-ui:
-    container_name: swagger-ui
     image: swaggerapi/swagger-ui
     environment:
       URL: ${SWAGGER_CONFIG_URL}
@@ -221,9 +156,7 @@ services:
       - api-nginx
 
   elk:
-    container_name: elk
-    build:
-      context: elk/docker
+    image: ${REGISTRY}/slim-vue-demo-elk:${IMAGE_TAG}
     volumes:
       - elk-data:/var/lib/elasticsearch
     environment:
@@ -231,14 +164,7 @@ services:
     ports:
       - "12201:12201/udp"
 
-  maintenance:
-    image: alpine
-    volumes:
-      - ./:/var/www
-    working_dir: /var/www
-
 volumes:
-  composer:
   api-postgres:
   amqp:
   elk-data:
