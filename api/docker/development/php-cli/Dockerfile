@@ -1,5 +1,7 @@
 FROM php:7.4-cli-alpine
 
+ENV TZ=Europe/Moscow
+
 RUN apk add --no-cache autoconf g++ make \
     && pecl install xdebug \
     && rm -rf /tmp/pear \
