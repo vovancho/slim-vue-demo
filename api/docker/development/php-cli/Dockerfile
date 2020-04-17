@@ -13,7 +13,7 @@ RUN apk add --no-cache postgresql-dev bash coreutils \
 
 RUN docker-php-ext-install sockets
 
-RUN apk add --no-cache unzip
+RUN apk add --no-cache unzip git
 
 RUN mv $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini
 
