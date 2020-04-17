@@ -89,6 +89,8 @@ services:
       context: api/docker
       dockerfile: development/php-cli/Dockerfile
     environment:
+      TRAVIS: ${TRAVIS}
+      TRAVIS_JOB_ID: ${TRAVIS_JOB_ID}
       API_ENV: test
       API_DEBUG: ${API_DEBUG}
       API_DB_HOST: ${API_DB_HOST}
@@ -111,7 +113,7 @@ services:
       API_AMQP_VHOST: ${API_AMQP_VHOST}
       FRONTEND_URL: ${FRONTEND_URL}
     volumes:
-      - ./api:/var/www
+      - ./:/var/www
     depends_on:
       - api-db
       - mailer
