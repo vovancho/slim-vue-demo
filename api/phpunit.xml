@@ -27,6 +27,7 @@
                 <directory>src/TaskHandler/Test</directory>
                 <directory>src/Frontend/Test</directory>
                 <directory>src/Http/Test</directory>
+                <directory>src/Data</directory>
             </exclude>
         </whitelist>
     </filter>
