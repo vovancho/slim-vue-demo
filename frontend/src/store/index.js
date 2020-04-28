@@ -1,11 +1,11 @@
-import Vue from "vue";
-import Vuex from "vuex";
-import axios from "axios";
-import jwt_decode from "jwt-decode";
-import tasks from "./modules/tasks";
-import { base as api } from "../api";
+import Vue from 'vue'
+import Vuex from 'vuex'
+import axios from 'axios'
+import jwtDecode from 'jwt-decode'
+import tasks from './modules/tasks'
+import { base as api } from '../api'
 
-Vue.use(Vuex);
+Vue.use(Vuex)
 
 export default new Vuex.Store({
   modules: {
@@ -13,87 +13,87 @@ export default new Vuex.Store({
   },
   state: {
     currentEmail: null,
-    user: JSON.parse(localStorage.getItem("user"))
+    user: JSON.parse(localStorage.getItem('user'))
   },
   getters: {
-    isLogged: state => {
-      return !!state.user;
+    isLogged: (state) => {
+      return !!state.user
     },
-    userId: state => {
+    userId: (state) => {
       if (state.user) {
-        let payload = jwt_decode(state.user.access_token);
-        return payload.sub;
+        const payload = jwtDecode(state.user.access_token)
+        return payload.sub
       }
-      return null;
+      return null
     },
-    userEmail: state => {
+    userEmail: (state) => {
       if (state.user) {
-        let payload = jwt_decode(state.user.access_token);
-        return payload.email;
+        const payload = jwtDecode(state.user.access_token)
+        return payload.email
       }
-      return null;
+      return null
     }
   },
   mutations: {
     changeCurrentEmail(state, email) {
-      state.currentEmail = email;
+      state.currentEmail = email
     },
     login(state, user) {
-      state.user = user;
+      state.user = user
     },
     logout(state) {
-      state.user = null;
+      state.user = null
     }
   },
   actions: {
     async login({ commit }, data) {
-      commit("logout");
+      commit('logout')
       try {
-        let response = await api.login(data.email, data.password);
-        const user = response.data;
-        localStorage.setItem("user", JSON.stringify(user));
-        axios.defaults.headers.common["Authorization"] =
-          "Bearer " + user.access_token;
-        commit("login", user);
+        const response = await api.login(data.email, data.password)
+        const user = response.data
+        localStorage.setItem('user', JSON.stringify(user))
+        axios.defaults.headers.common.Authorization =
+          'Bearer ' + user.access_token
+        commit('login', user)
 
-        return user;
+        return user
       } catch (error) {
-        commit("logout");
-        localStorage.removeItem("user");
+        commit('logout')
+        localStorage.removeItem('user')
 
-        throw error;
+        throw error
       }
     },
     logout({ commit }) {
-      commit("logout");
-      localStorage.removeItem("user");
-      delete axios.defaults.headers.common["Authorization"];
+      commit('logout')
+      localStorage.removeItem('user')
+      delete axios.defaults.headers.common.Authorization
     },
     async refresh({ state, commit, dispatch }) {
       if (state.user) {
-        delete axios.defaults.headers.common["Authorization"];
+        delete axios.defaults.headers.common.Authorization
 
         try {
-          let response = await api.refreshToken(state.user.refresh_token);
-          const user = response.data;
-          localStorage.setItem("user", JSON.stringify(user));
-          axios.defaults.headers.common["Authorization"] =
-            "Bearer " + user.access_token;
-          commit("login", user);
+          const response = await api.refreshToken(state.user.refresh_token)
+          const user = response.data
+          localStorage.setItem('user', JSON.stringify(user))
+          axios.defaults.headers.common.Authorization =
+            'Bearer ' + user.access_token
+          commit('login', user)
 
-          return response;
+          return response
         } catch (error) {
-          dispatch("logout");
+          dispatch('logout')
 
-          throw error;
+          throw error
         }
       }
     },
     signup(context, { email, password }) {
-      return api.signup(email, password);
+      return api.signup(email, password)
     },
     signupConfirm(context, { email, token }) {
-      return api.signupConfirm(email, token);
+      return api.signupConfirm(email, token)
     }
   }
-});
+})

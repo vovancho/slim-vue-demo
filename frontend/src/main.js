@@ -1,45 +1,44 @@
-import Vue from "vue";
-import App from "./App.vue";
-import router from "./router";
-import store from "./store";
-import vuetify from "./plugins/vuetify";
-import VuetifyDialog from "vuetify-dialog";
-import axios from "axios";
-import VueTheMask from "vue-the-mask";
-import "./vee-validate/index";
+import Vue from 'vue'
+import App from './App.vue'
+import router from './router'
+import store from './store'
+import vuetify from './plugins/vuetify'
+import VuetifyDialog from 'vuetify-dialog'
+import axios from 'axios'
+import VueTheMask from 'vue-the-mask'
+import './vee-validate/index'
 
-Vue.config.productionTip = false;
+Vue.config.productionTip = false
 
-axios.defaults.baseURL = process.env.VUE_APP_API_URL;
+axios.defaults.baseURL = process.env.VUE_APP_API_URL
 
-const user = JSON.parse(localStorage.getItem("user"));
+const user = JSON.parse(localStorage.getItem('user'))
 if (user) {
-  axios.defaults.headers.common["Authorization"] =
-    "Bearer " + user.access_token;
+  axios.defaults.headers.common.Authorization = 'Bearer ' + user.access_token
 }
 
-axios.interceptors.response.use(null, async error => {
+axios.interceptors.response.use(null, async (error) => {
   if (!error.response || error.response.status !== 401) {
-    throw error;
+    throw error
   }
-  const request = error.config;
+  const request = error.config
   if (request.data) {
-    let data = JSON.parse(request.data);
+    const data = JSON.parse(request.data)
     if (data && data.grant_type) {
-      throw error;
+      throw error
     }
   }
 
   try {
-    await store.dispatch("refresh")
+    await store.dispatch('refresh')
   } catch (e) {
-    await router.push({ name: "login" });
-    throw error;
+    await router.push({ name: 'login' })
+    throw error
   }
 
-  request.headers["Authorization"] = "Bearer " + store.state.user.access_token;
-  return axios(request);
-});
+  request.headers.Authorization = 'Bearer ' + store.state.user.access_token
+  return axios(request)
+})
 
 Vue.use(VuetifyDialog, {
   context: {
@@ -47,26 +46,26 @@ Vue.use(VuetifyDialog, {
   },
   confirm: {
     actions: {
-      false: "Отмена",
+      false: 'Отмена',
       true: {
-        text: "Применить",
-        color: "primary"
+        text: 'Применить',
+        color: 'primary'
       }
     }
   },
   error: {
     icon: false,
     actions: {
-      false: "Закрыть"
+      false: 'Закрыть'
     }
   }
-});
+})
 
-Vue.use(VueTheMask);
+Vue.use(VueTheMask)
 
 new Vue({
   router,
   store,
   vuetify,
-  render: h => h(App)
-}).$mount("#app");
+  render: (h) => h(App)
+}).$mount('#app')

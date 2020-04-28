@@ -11,10 +11,12 @@ services:
 
 # cache vendor dirs
 cache:
+  yarn: true
   directories:
     - $HOME/.composer/cache
 
 install:
+  - docker-compose -f docker-compose-travis-ci.yml run --rm frontend-node-cli yarn install --frozen-lockfile
   - travis_retry composer self-update && composer --version
   - travis_retry composer install --dev --prefer-dist --no-interaction --working-dir=api
 
@@ -23,6 +25,11 @@ before_script:
   - docker-compose -f docker-compose-travis-ci.yml run --rm api-php-cli php api/bin/app.php migrations:migrate --no-interaction
 
 script:
+  - docker-compose -f docker-compose-travis-ci.yml run --rm frontend-node-cli yarn eslint
+  - docker-compose -f docker-compose-travis-ci.yml run --rm frontend-node-cli yarn stylelint --custom-syntax stylelint-plugin-stylus/custom-syntax
+  - travis_retry composer lint --working-dir=api
+  - travis_retry composer cs-check --working-dir=api
+  - docker-compose -f docker-compose-travis-ci.yml run --rm api-php-cli php api/bin/app.php orm:validate-schema --no-interaction
   - docker-compose -f docker-compose-travis-ci.yml run --rm api-php-cli api/vendor/bin/phpunit --configuration api/phpunit.xml --coverage-clover api/var/coverage/clover.xml --colors
 
 after_success:

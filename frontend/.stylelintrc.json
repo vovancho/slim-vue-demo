@@ -1,0 +1,7 @@
+{
+  "extends": ["stylelint-plugin-stylus/standard", "stylelint-plugin-stylus/recommended"],
+  "plugins": ["stylelint-prettier", "stylelint-plugin-stylus"],
+  "rules": {
+    "prettier/prettier": true
+  }
+}

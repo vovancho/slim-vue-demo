@@ -7,7 +7,7 @@ up: docker-up
 down: docker-down
 restart: down up
 check: lint validate-schema test
-lint: api-lint
+lint: api-lint frontend-lint
 validate-schema: api-validate-schema
 test: api-test api-fixtures
 test-coverage: api-test-coverage
@@ -52,6 +52,22 @@ frontend-assets-install:
 frontend-assets-upgrade:
 	docker-compose run --rm frontend-node-cli yarn upgrade
 
+frontend-ready:
+	docker-compose run --rm maintenance touch frontend/.ready
+
+frontend-lint:
+	docker-compose run --rm frontend-node-cli yarn eslint
+	docker-compose run --rm frontend-node-cli yarn stylelint --custom-syntax stylelint-plugin-stylus/custom-syntax
+
+frontend-eslint-fix:
+	docker-compose run --rm frontend-node-cli yarn eslint-fix
+
+frontend-pretty:
+	docker-compose run --rm frontend-node-cli yarn prettier
+
+ws-ready:
+	docker-compose run --rm maintenance touch websocket/.ready
+
 ws-assets-install:
 	docker-compose run --rm ws yarn install
 
@@ -85,12 +101,6 @@ api-lint:
 
 api-ready:
 	docker-compose run --rm maintenance touch api/.ready
-
-frontend-ready:
-	docker-compose run --rm maintenance touch frontend/.ready
-
-ws-ready:
-	docker-compose run --rm maintenance touch websocket/.ready
 
 api-test:
 	docker-compose run --rm api-php-cli vendor/bin/phpunit
