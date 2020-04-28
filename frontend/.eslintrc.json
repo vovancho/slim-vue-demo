@@ -1,0 +1,27 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "extends": [
+    "plugin:vue/recommended",
+    "standard",
+    "plugin:prettier/recommended"
+  ],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parserOptions": {
+    "parser": "babel-eslint",
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "plugins": ["vue", "prettier"],
+  "rules": {
+    "prettier/prettier": "error",
+    "vue/max-attributes-per-line": "off",
+    "vue/valid-v-slot": "off"
+  }
+}

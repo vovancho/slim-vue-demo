@@ -1,8 +1,99 @@
+<script>
+import Vue from 'vue'
+import form from '../mixins/form'
+import { createNamespacedHelpers } from 'vuex'
+
+const { mapActions } = createNamespacedHelpers('tasks')
+
+export default {
+  mixins: [form],
+  data() {
+    return {
+      visibilities: [
+        { value: 'public', text: 'Общая' },
+        { value: 'private', text: 'Приватная' }
+      ],
+      form: {
+        name: {
+          label: 'Наименование',
+          value: '',
+          rules: { required: true, max: 255 },
+          error: null
+        },
+        visibility: {
+          label: 'Видимость задачи',
+          value: '',
+          rules: { required: true, oneOf: ['public', 'private'] },
+          error: null
+        }
+      },
+      show: false,
+      loading: false,
+      error: null
+    }
+  },
+  watch: {
+    show: function(val) {
+      if (val) {
+        Vue.nextTick(() => {
+          this.resetForm()
+          this.$refs['tasks-new'].reset()
+          this.focusNameInput()
+        })
+      }
+    }
+  },
+  methods: {
+    ...mapActions(['createTask']),
+    async createTaskClick() {
+      this.error = null
+
+      const valid = await this.$refs['tasks-new'].validate()
+
+      if (valid) {
+        try {
+          this.loading = true
+          const preparedForm = this.prepareForm(this.form)
+
+          await this.createTask(preparedForm)
+          this.loading = false
+          this.show = false
+        } catch (error) {
+          if (error.response) {
+            const errorObj = error.response.data
+            if (errorObj) {
+              if (errorObj.message) {
+                this.error = errorObj.message
+              }
+              if (errorObj.errors) {
+                this.form = this.assignErrors(this.form, errorObj.errors)
+              }
+            }
+          } else {
+            console.log(error.message)
+          }
+          this.loading = false
+        }
+      }
+    },
+    resetForm() {
+      this.form.name.value = ''
+      this.form.visibility.value = 'public'
+    },
+    focusNameInput() {
+      this.$nextTick(() => {
+        this.$refs.name.focus()
+      })
+    }
+  }
+}
+</script>
+
 <template>
-  <v-dialog persistent v-model="show" max-width="600px">
-    <template v-slot:activator="{ on: dialog }">
+  <v-dialog v-model="show" persistent max-width="600px">
+    <template #activator="{ on: dialog }">
       <v-tooltip right>
-        <template v-slot:activator="{ on: tooltip }">
+        <template #activator="{ on: tooltip }">
           <v-fab-transition>
             <v-btn
               color="success"
@@ -46,11 +137,12 @@
 
                   <ValidationObserver ref="tasks-new">
                     <ValidationProvider
+                      v-slot="{ errors }"
                       :name="form.name.label"
                       :rules="form.name.rules"
-                      v-slot="{ errors, valid }"
                     >
                       <v-text-field
+                        ref="name"
                         v-model="form.name.value"
                         :label="form.name.label"
                         name="name"
@@ -58,14 +150,13 @@
                         type="text"
                         :error-messages="mergeErrors(errors, form.name.error)"
                         required
-                        ref="name"
                       />
                     </ValidationProvider>
 
                     <ValidationProvider
+                      v-slot="{ errors }"
                       :name="form.visibility.label"
                       :rules="form.visibility.rules"
-                      v-slot="{ errors }"
                     >
                       <v-select
                         v-model="form.visibility.value"
@@ -73,9 +164,11 @@
                         :items="visibilities"
                         name="visibility"
                         prepend-icon="mdi-lock"
-                        :error-messages="mergeErrors(errors, form.visibility.error)"
+                        :error-messages="
+                          mergeErrors(errors, form.visibility.error)
+                        "
                         required
-                      ></v-select>
+                      />
                     </ValidationProvider>
                   </ValidationObserver>
                 </v-col>
@@ -89,106 +182,18 @@
 
       <v-card-actions>
         <v-spacer />
-        <v-btn color="blue darken-1" text @click="show = false">Закрыть</v-btn>
+        <v-btn color="blue darken-1" text @click="show = false">
+          Закрыть
+        </v-btn>
         <v-btn
           color="blue darken-1"
           text
           :loading="loading"
           @click="createTaskClick"
-          >Добавить</v-btn
         >
+          Добавить
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
-
-<script>
-import Vue from "vue";
-import form from "../mixins/form";
-import { createNamespacedHelpers } from "vuex";
-
-const { mapActions } = createNamespacedHelpers("tasks");
-
-export default {
-  mixins: [form],
-  data() {
-    return {
-      visibilities: [
-        { value: "public", text: "Общая" },
-        { value: "private", text: "Приватная" }
-      ],
-      form: {
-        name: {
-          label: "Наименование",
-          value: "",
-          rules: { required: true, max: 255 },
-          error: null
-        },
-        visibility: {
-          label: "Видимость задачи",
-          value: "",
-          rules: { required: true, oneOf: ["public", "private"] },
-          error: null
-        }
-      },
-      show: false,
-      loading: false,
-      error: null
-    };
-  },
-  methods: {
-    ...mapActions(["createTask"]),
-    async createTaskClick() {
-      this.error = null;
-
-      const valid = await this.$refs["tasks-new"].validate();
-
-      if (valid) {
-        try {
-          this.loading = true;
-          let preparedForm = this.prepareForm(this.form);
-
-          await this.createTask(preparedForm);
-          this.loading = false;
-          this.show = false;
-        } catch (error) {
-          if (error.response) {
-            let errorObj = error.response.data;
-            if (errorObj) {
-              if (errorObj.message) {
-                this.error = errorObj.message;
-              }
-              if (errorObj.errors) {
-                this.form = this.assignErrors(this.form, errorObj.errors);
-              }
-            }
-          } else {
-            console.log(error.message);
-          }
-          this.loading = false;
-        }
-      }
-    },
-    resetForm() {
-      this.form.name.value = "";
-      this.form.visibility.value = "public";
-    },
-    focusNameInput() {
-      this.$nextTick(() => {
-        this.$refs.name.focus();
-      });
-    }
-  },
-  watch: {
-    show: function(val) {
-      if (val) {
-        Vue.nextTick(() => {
-          this.resetForm();
-          this.$refs["tasks-new"].reset();
-          this.focusNameInput();
-        });
-      }
-    }
-  }
-};
-</script>
