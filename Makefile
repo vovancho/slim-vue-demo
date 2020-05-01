@@ -7,7 +7,7 @@ up: docker-up
 down: docker-down
 restart: down up
 check: lint validate-schema test
-lint: api-lint frontend-lint
+lint: api-lint frontend-lint ws-lint
 validate-schema: api-validate-schema
 test: api-test api-fixtures
 test-coverage: api-test-coverage
@@ -69,10 +69,22 @@ ws-ready:
 	docker-compose run --rm maintenance touch websocket/.ready
 
 ws-assets-install:
-	docker-compose run --rm ws yarn install
+	docker-compose run --rm ws-node-cli yarn install
 
 ws-assets-upgrade:
-	docker-compose run --rm ws yarn upgrade
+	docker-compose run --rm ws-node-cli yarn upgrade
+
+ws-lint:
+	docker-compose run --rm ws-node-cli yarn eslint
+
+ws-eslint-fix:
+	docker-compose run --rm ws-node-cli yarn eslint-fix
+
+ws-pretty:
+	docker-compose run --rm ws-node-cli yarn prettier
+
+ws-start:
+	docker-compose exec ws npm run start
 
 api-oauth-keys:
 	docker-compose run --rm api-php-cli mkdir -p var/oauth
@@ -119,9 +131,6 @@ api-test-functional:
 
 api-test-functional-coverage:
 	docker-compose run --rm api-php-cli composer test-coverage -- --testsuite=functional
-
-ws-start:
-	docker-compose exec ws npm run start
 
 api-clear-cache:
 	docker-compose run --rm api-php-cli php bin/app.php orm:clear-cache:metadata

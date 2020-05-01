@@ -46,6 +46,13 @@ services:
     volumes:
       - ./frontend:/var/www
 
+  ws-node-cli:
+    container_name: ws-node-cli
+    image: node:10.13-jessie
+    working_dir: /var/www
+    volumes:
+      - ./websocket:/var/www
+
   api-nginx:
     container_name: api-nginx
     build:
