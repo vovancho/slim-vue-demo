@@ -201,6 +201,13 @@ services:
       - ./websocket:/var/www
     command: sh -c "until [ -f .ready ] ; do sleep 1 ; done && /start.sh && npm start"
 
+  ws-node-cli:
+    container_name: ws-node-cli
+    image: node:10.13-jessie
+    working_dir: /var/www
+    volumes:
+      - ./websocket:/var/www
+
   amqp:
     container_name: amqp
     build:
